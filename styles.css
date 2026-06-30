@@ -4,6 +4,7 @@
   --red: #ff174d;
   --cyan: #18f0ff;
   --lime: #b7ff2a;
+  --purple: #9d4dff;
   --text: #eef7ff;
   --muted: #93a4b7;
   --line: rgba(24, 240, 255, 0.22);
@@ -136,7 +137,7 @@ h1 {
 .terminal-bar span:nth-child(3) { background: var(--cyan); box-shadow: 0 0 18px var(--cyan); }
 pre { min-height: 155px; padding: 22px; margin: 0; color: var(--cyan); white-space: pre-wrap; line-height: 1.55; }
 
-.panel-section, .council, .security {
+.panel-section, .council, .security, .ecosystem {
   padding: 86px clamp(20px, 7vw, 110px);
 }
 .section-heading h2, .security h2 {
@@ -145,12 +146,12 @@ pre { min-height: 155px; padding: 22px; margin: 0; color: var(--cyan); white-spa
   letter-spacing: -0.06em;
   margin: 0 0 34px;
 }
-.cards, .agent-grid {
+.cards, .agent-grid, .district-map {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
-.card, .agent-card {
+.card, .agent-card, .district-card {
   position: relative;
   min-height: 220px;
   padding: 28px;
@@ -163,12 +164,24 @@ pre { min-height: 155px; padding: 22px; margin: 0; color: var(--cyan); white-spa
   opacity: 0;
   transition: transform 700ms ease, opacity 700ms ease, border-color 300ms ease;
 }
-.card.visible, .agent-card.visible { transform: translateY(0); opacity: 1; }
-.card:hover, .agent-card:hover { border-color: var(--cyan); }
-.card h3, .agent-card h3 { font-size: 1.45rem; margin: 0 0 12px; }
-.card p, .agent-card p, .security p, .security li { color: var(--muted); line-height: 1.65; }
+.card.visible, .agent-card.visible, .district-card.visible { transform: translateY(0); opacity: 1; }
+.card:hover, .agent-card:hover, .district-card:hover { border-color: var(--cyan); }
+.card h3, .agent-card h3, .district-card h3 { font-size: 1.45rem; margin: 0 0 12px; }
+.card p, .agent-card p, .security p, .security li, .district-card p { color: var(--muted); line-height: 1.65; }
 .agent-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.agent-card span { color: var(--red); font-weight: 1000; letter-spacing: 0.12em; }
+.agent-card span, .district-card span { color: var(--red); font-weight: 1000; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.72rem; }
+.district-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: radial-gradient(circle at top right, rgba(24,240,255,0.22), transparent 38%);
+  pointer-events: none;
+}
+.creator::before { background: radial-gradient(circle at top right, rgba(183,255,42,0.19), transparent 38%); }
+.mcp::before { background: radial-gradient(circle at top right, rgba(255,23,77,0.18), transparent 38%); }
+.main-city { border-color: rgba(24,240,255,0.22); }
+.creator { border-color: rgba(183,255,42,0.2); }
+.mcp { border-color: rgba(255,23,77,0.22); }
 
 .chain-strip {
   display: flex;
@@ -211,6 +224,6 @@ footer { padding: 36px 20px; text-align: center; color: var(--muted); }
 @media (max-width: 900px) {
   .nav { align-items: flex-start; gap: 14px; flex-direction: column; }
   .nav a { margin-left: 0; margin-right: 14px; }
-  .cards, .agent-grid, .security { grid-template-columns: 1fr; }
+  .cards, .agent-grid, .security, .district-map { grid-template-columns: 1fr; }
   h1 { font-size: clamp(3.1rem, 18vw, 5.3rem); }
 }
