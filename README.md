@@ -34,3 +34,22 @@ MCP request
   -> validate output
   -> log receipt
 ```
+
+## Reference Lock Pipeline
+
+The MCP kit now includes a reference-lock pipeline for reading, validating, routing, and logging AGENTROPOLIS-CREATOR character sheets, prop sheets, environment sheets, shot prompt packs, continuity reports, and handoff manifests.
+
+See [`docs/REFERENCE_LOCK_MCP_PIPELINE.md`](docs/REFERENCE_LOCK_MCP_PIPELINE.md).
+
+Core pattern:
+
+```text
+Creator package
+  -> MCP intake
+  -> schema validation
+  -> risk classification
+  -> tool authority check
+  -> generation or review action
+  -> output validation
+  -> receipt log
+```
