@@ -35,6 +35,28 @@ MCP request
   -> log receipt
 ```
 
+## GitLawb Zero MCP Execution Lane
+
+GitLawb Zero is incorporated as an optional local coding execution lane.
+
+It is a tool lane candidate, not the brain and not unrestricted authority.
+
+See [`docs/GITLAWB_ZERO_MCP_EXECUTION_LANE.md`](docs/GITLAWB_ZERO_MCP_EXECUTION_LANE.md).
+
+Core pattern:
+
+```text
+MCP request
+  -> classify task
+  -> score risk
+  -> select model lane
+  -> check tool authority
+  -> route to GitLawb Zero if local coding is allowed
+  -> generate patch candidate
+  -> run validation
+  -> log receipt
+```
+
 ## Reference Lock Pipeline
 
 The MCP kit now includes a reference-lock pipeline for reading, validating, routing, and logging AGENTROPOLIS-CREATOR character sheets, prop sheets, environment sheets, shot prompt packs, continuity reports, and handoff manifests.
@@ -65,4 +87,5 @@ Use the WSL bootstrap lane for Windows development and keep MCP routing provider
 - Model Council Routing selects the model lane.
 - MCP Registry selects tool access.
 - Policy Gate checks authority.
+- GitLawb Zero may provide a local coding lane when authorized.
 - Receipt logs preserve auditability.
