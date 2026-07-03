@@ -16,6 +16,25 @@ Enable Pages from the repository settings and serve from the `main` branch root.
 
 A cinematic command-atrium style homepage for the Agentropolis MCP Agent Kit: MCP registry, cross-chain API map, Hermes router, NemoClaw builder layer, Nemotron research council, wallet execution guardrails, and security-first agent infrastructure.
 
+## District Recruitment Swarm Tools
+
+The MCP kit now defines callable recruitment capabilities for every Agentropolis district recruiter.
+
+```text
+SLM scout -> LLM closer -> ML intern -> register agent citizen
+```
+
+See [`docs/DISTRICT_RECRUITMENT_SWARM.md`](docs/DISTRICT_RECRUITMENT_SWARM.md).
+
+Core MCP capabilities:
+
+- `scan_recruitment_leads`
+- `score_recruitment_lead`
+- `draft_recruitment_outreach`
+- `register_agent_citizen`
+
+Recruiters can invite and onboard. Sensitive vault, wallet, settlement, or governance actions still require policy gates, verification, and receipts.
+
 ## Model Council Routing
 
 The MCP kit now includes a provider-aware routing map for selecting the right model lane before tool execution.
