@@ -53,3 +53,16 @@ Creator package
   -> output validation
   -> receipt log
 ```
+
+## No-Claude MCP Bootstrap
+
+This kit is not bound to Claude, Spawn, or any single provider-specific wrapper.
+
+Use the WSL bootstrap lane for Windows development and keep MCP routing provider-agnostic:
+
+- Bootstrap guide: [`docs/NO_CLAUDE_MCP_BOOTSTRAP.md`](docs/NO_CLAUDE_MCP_BOOTSTRAP.md)
+- HERMES Dispatch selects the work lane.
+- Model Council Routing selects the model lane.
+- MCP Registry selects tool access.
+- Policy Gate checks authority.
+- Receipt logs preserve auditability.
