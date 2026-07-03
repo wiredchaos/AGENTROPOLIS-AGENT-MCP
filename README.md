@@ -35,6 +35,39 @@ MCP request
   -> log receipt
 ```
 
+## Hermes Backend Routing Matrix
+
+The MCP kit now treats model rankings, search providers, extraction tools, and skill installs as capability lanes behind governance.
+
+See [`docs/HERMES_BACKEND_ROUTING_MATRIX.md`](docs/HERMES_BACKEND_ROUTING_MATRIX.md).
+
+Core pattern:
+
+```text
+MCP request
+  -> classify task
+  -> select model lane
+  -> select backend lane
+  -> check authority
+  -> validate
+  -> receipt
+```
+
+Backends are replaceable. Skills remain stable. Governance decides what can execute.
+
+## UNBROKER Privacy Lane
+
+UNBROKER is documented as a governed Hermes security skill lane for personal-data broker discovery, deletion requests, verification, receipts, and re-scans.
+
+Install path:
+
+```bash
+hermes update
+hermes skills install official/security/unbroker
+```
+
+See [`docs/UNBROKER_MCP_PRIVACY_LANE.md`](docs/UNBROKER_MCP_PRIVACY_LANE.md).
+
 ## GitLawb Zero MCP Execution Lane
 
 GitLawb Zero is incorporated as an optional local coding execution lane.
