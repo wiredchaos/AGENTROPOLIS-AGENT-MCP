@@ -89,3 +89,22 @@ Use the WSL bootstrap lane for Windows development and keep MCP routing provider
 - Policy Gate checks authority.
 - GitLawb Zero may provide a local coding lane when authorized.
 - Receipt logs preserve auditability.
+
+## Provider-Agnostic Terminal MCP Lane
+
+Terminal coding agents are now documented as governed MCP tool lanes, not root authority.
+
+See [`docs/PROVIDER_AGNOSTIC_TERMINAL_MCP_LANE.md`](docs/PROVIDER_AGNOSTIC_TERMINAL_MCP_LANE.md).
+
+Core pattern:
+
+```text
+MCP request
+  -> classify task
+  -> score risk
+  -> select model lane
+  -> check tool authority
+  -> route to terminal lane if allowed
+  -> validate output
+  -> log receipt
+```
