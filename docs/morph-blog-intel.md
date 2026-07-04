@@ -23,6 +23,20 @@ Yes. Morph applies to AGENTROPOLIS where it improves agentic code work:
 - coding-agent cost control
 - trace-level failure detection
 
+## AI Infrastructure Engineer alignment
+
+Yes. Morph applies directly to the AI Infrastructure Engineer roadmap.
+
+In this repo, Morph belongs under MCP-facing coding-agent infrastructure:
+
+- tool contracts for code search, patching, compaction, routing, and trace analysis
+- optional provider adapters that remain swappable
+- placeholder configuration only, never live credentials
+- test fixtures proving Morph is not hardwired into Agentropolis
+- receipts for Morph-assisted coding actions
+
+Morph should strengthen the MCP service layer without becoming the MCP layer itself.
+
 ## MCP implications
 
 AGENTROPOLIS-AGENT-MCP should treat Morph as an optional coding-agent MCP lane with these core functions:
@@ -49,25 +63,6 @@ Use this repo to define:
 Morph applies here **only** as the MCP contract and adapter layer for coding-agent infrastructure.
 
 This repo should not become the Morph product. It should expose clean boundaries so Hermes, Creator, GTM, 54T, and the main Agentropolis repo can use Morph without becoming dependent on it.
-
-## Codex OAuth image editing applicability
-
-Yes. Codex OAuth image editing applies to this repo where MCP needs to carry source and reference images into Codex-style image-generation or image-editing workflows.
-
-Treat it as a Hermes/Codex image capability, not a Morph product claim. Morph remains the coding-agent infrastructure lane.
-
-MCP contract implications:
-
-- support `input_image` style content parts beside text prompts
-- allow up to 16 reference images when the upstream provider supports it
-- enforce local validation before provider calls
-- accept raster formats only: PNG, JPEG, GIF, and WEBP
-- reject SVG, TIFF, and ICO locally with clear errors
-- validate by magic bytes, not filename extension alone
-- preserve a 25 MB image size cap unless a provider-specific adapter documents a stricter limit
-- keep OAuth/API credential handling outside committed files
-
-This unlocks Agentropolis image-to-image workflows for character references, product/listing cleanup, UI mockups, marketing assets, and visual consistency passes through MCP boundaries.
 
 ## Do not split yet
 
