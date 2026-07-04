@@ -2,17 +2,17 @@
 
 Source: Morph blog
 
-## Core lock
+## Current lock
 
-Morph is a **coding-agent infrastructure lane**.
+Yes. Morph applies.
 
-Morph is **not** a separate AGENTROPOLIS repo yet.
+Morph is a **coding-agent infrastructure lane**, not a separate AGENTROPOLIS repo yet.
 
 This repo is the primary place to define Morph-facing MCP contracts, adapter boundaries, placeholder configuration, and test fixtures.
 
 ## Applicability decision
 
-Yes. Morph applies to AGENTROPOLIS where it improves agentic code work:
+Morph applies to AGENTROPOLIS where it improves agentic code work:
 
 - repo search
 - semantic code discovery
@@ -22,20 +22,6 @@ Yes. Morph applies to AGENTROPOLIS where it improves agentic code work:
 - model routing
 - coding-agent cost control
 - trace-level failure detection
-
-## AI Infrastructure Engineer alignment
-
-Yes. Morph applies directly to the AI Infrastructure Engineer roadmap.
-
-In this repo, Morph belongs under MCP-facing coding-agent infrastructure:
-
-- tool contracts for code search, patching, compaction, routing, and trace analysis
-- optional provider adapters that remain swappable
-- placeholder configuration only, never live credentials
-- test fixtures proving Morph is not hardwired into Agentropolis
-- receipts for Morph-assisted coding actions
-
-Morph should strengthen the MCP service layer without becoming the MCP layer itself.
 
 ## MCP implications
 
@@ -78,29 +64,8 @@ Do not create a standalone Morph repo unless Morph becomes an independent AGENTR
 - reusable SDK
 - public documentation surface
 
-Until then, Morph remains a lane across the existing Agentropolis repo map.
-
-## Priority reads for AGENTROPOLIS
-
-1. GLM-5.2: An Open Model That Codes Like a Closed One
-2. Claude Code cost: keep your AI bill flat while usage grows
-3. One Backbone, Many Reflexes
-4. The Case for Multi-Agent Systems
-5. Everyone is Building the Same Thing: All Agents Will Be Coding Agents
-6. Lessons from 40+ Coding Agent Harnesses: Context Is the Entire Game
-7. Flash Compact: 33,000 tok/sec Context Compaction
-8. Coding Agents Fail at Search, Not Coding: 15 Papers Prove It
-9. WarpGrep: Fast, Parallel Code Retrieval with RL
-10. Claude Code MCP: Fix the 2 Things That Kill Your Flow
-11. Bringing FastApply Back to Cursor with MCP
-12. Fast Apply Makes Faster Agents
-13. What is Morph Fast Apply?
-14. Best Practices for Building Coding Agents with Morph
+Until that gate is met, Morph remains a lane across the existing Agentropolis repo map.
 
 ## Operating rule
 
 Morph MCP should use local environment variables only. Do not commit credentials.
-
-## Next build task
-
-Create a Morph MCP checklist for Claude Code, Codex, Cursor, Gemini CLI, VS Code, OpenCode, and Factory using placeholder secrets only.
