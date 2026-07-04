@@ -50,6 +50,25 @@ Morph applies here **only** as the MCP contract and adapter layer for coding-age
 
 This repo should not become the Morph product. It should expose clean boundaries so Hermes, Creator, GTM, 54T, and the main Agentropolis repo can use Morph without becoming dependent on it.
 
+## Codex OAuth image editing applicability
+
+Yes. Codex OAuth image editing applies to this repo where MCP needs to carry source and reference images into Codex-style image-generation or image-editing workflows.
+
+Treat it as a Hermes/Codex image capability, not a Morph product claim. Morph remains the coding-agent infrastructure lane.
+
+MCP contract implications:
+
+- support `input_image` style content parts beside text prompts
+- allow up to 16 reference images when the upstream provider supports it
+- enforce local validation before provider calls
+- accept raster formats only: PNG, JPEG, GIF, and WEBP
+- reject SVG, TIFF, and ICO locally with clear errors
+- validate by magic bytes, not filename extension alone
+- preserve a 25 MB image size cap unless a provider-specific adapter documents a stricter limit
+- keep OAuth/API credential handling outside committed files
+
+This unlocks Agentropolis image-to-image workflows for character references, product/listing cleanup, UI mockups, marketing assets, and visual consistency passes through MCP boundaries.
+
 ## Do not split yet
 
 Do not create a standalone Morph repo unless Morph becomes an independent AGENTROPOLIS product with:
