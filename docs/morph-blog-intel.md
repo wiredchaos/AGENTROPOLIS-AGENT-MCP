@@ -1,6 +1,6 @@
 # Morph Blog Intelligence for AGENTROPOLIS-AGENT-MCP
 
-Source: https://www.morphllm.com/blog
+Source: Morph blog
 
 ## Core lock
 
@@ -44,6 +44,12 @@ Use this repo to define:
 - test fixtures proving Morph remains optional and swappable
 - receipt expectations for Morph-assisted coding actions
 
+## Applied repo decision
+
+Morph applies here **only** as the MCP contract and adapter layer for coding-agent infrastructure.
+
+This repo should not become the Morph product. It should expose clean boundaries so Hermes, Creator, GTM, 54T, and the main Agentropolis repo can use Morph without becoming dependent on it.
+
 ## Do not split yet
 
 Do not create a standalone Morph repo unless Morph becomes an independent AGENTROPOLIS product with:
@@ -79,11 +85,7 @@ Until then, Morph remains a lane across the existing Agentropolis repo map.
 
 ## Operating rule
 
-Morph MCP should be installed with environment variables only. Do not commit API keys.
-
-```bash
-export MORPH_API_KEY=replace_with_local_secret
-```
+Morph MCP should use local environment variables only. Do not commit credentials.
 
 ## Next build task
 
