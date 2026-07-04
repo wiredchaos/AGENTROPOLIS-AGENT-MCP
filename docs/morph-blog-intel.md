@@ -2,6 +2,14 @@
 
 Source: https://www.morphllm.com/blog
 
+## Applicability decision
+
+Yes. Morph applies to AGENTROPOLIS as a coding-agent infrastructure lane.
+
+It should be tracked and integrated where it improves agentic code work: repo search, patch application, context compaction, model routing, coding-agent cost control, and trace-level failure detection.
+
+It should not become a separate AGENTROPOLIS repo yet. Keep Morph as an interchangeable provider lane until there is enough first-party code, tests, and release surface to justify a standalone package.
+
 ## Why this matters
 
 Morph is not only a model endpoint. The blog shows Morph is positioning around coding-agent infrastructure, fast codegen, code search, context compaction, routing, and semantic agent failure detection.
@@ -32,6 +40,18 @@ AGENTROPOLIS-AGENT-MCP should treat Morph as a coding-agent MCP lane with these 
 - Compact for long-running sessions
 - Model Router for model selection
 - Reflex for agent trace classification and failure detection
+
+## Integration scope
+
+This repo is the primary Morph integration surface.
+
+Use it to define:
+
+- MCP checklist
+- provider adapter boundaries
+- placeholder environment configuration
+- tool contracts for WarpGrep, Fast Apply, Compact, Router, and Reflex
+- test fixtures that prove Morph remains optional and swappable
 
 ## Operating rule
 
