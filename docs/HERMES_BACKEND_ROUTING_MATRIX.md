@@ -38,6 +38,26 @@ Routing criteria:
 - cost cap
 - fallback availability
 
+### Experimental Volume Provider Lane
+
+Possible providers:
+
+- NaraRouter
+- OpenRouter free-tier routes
+- Kimchi free-credit routes
+- other dashboard-verified OpenAI-compatible gateways
+
+NaraRouter is tracked as an optional OpenAI-compatible provider lane with operator-reported high daily free-token capacity.
+
+See [`docs/NARAROUTER_PROVIDER_LANE.md`](NARAROUTER_PROVIDER_LANE.md).
+
+Rules:
+
+- dashboard-verify quota before use
+- keep credentials outside the repo
+- use only for low-risk, non-sensitive workloads until evaluated
+- log receipt for model, quota, latency, quality, and failure notes
+
 ### Search Lane
 
 Possible providers:
@@ -102,7 +122,7 @@ Model Council -> MCP Registry -> Policy Gate -> Validation -> Receipt Log
 
 Backends are replaceable.
 
-If one provider fails, throttles, changes pricing, or loses quality, MCP should be able to select another lane without changing the skill contract.
+If one provider fails, throttles, changes pricing, changes free quotas, loses quality, or changes terms, MCP should be able to select another lane without changing the skill contract.
 
 ## Receipt Shape
 
@@ -115,5 +135,18 @@ If one provider fails, throttles, changes pricing, or loses quality, MCP should 
   "authority_level": "READ_ONLY",
   "validated": true,
   "receipt_logged": true
+}
+```
+
+## NaraRouter Receipt Extension
+
+```json
+{
+  "provider": "nararouter",
+  "base_url": "router.bynara.id/v1",
+  "quota_verified_in_dashboard": false,
+  "approved_lanes": ["READ_ONLY", "DRAFT_ONLY"],
+  "sensitive_data_allowed": false,
+  "production_mutation_allowed": false
 }
 ```
