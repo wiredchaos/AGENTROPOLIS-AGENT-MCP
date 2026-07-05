@@ -117,12 +117,23 @@ MCP request
   -> log receipt
 ```
 
-## T3MP3ST Authorized Red Team Lane
+## ODS Local AI Server Lane
 
-T3MP3ST is tracked as an optional authorized red team MCP lane.
+ODS is tracked as an optional local AI server lane for workstation, homelab, and private AI stack deployments.
 
-It is a governed security harness, not root authority and not a permission bypass.
+It is infrastructure, not a district, not the brain, and not unrestricted authority.
 
-See [`docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md`](docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md).
+See [`docs/ODS_LOCAL_AI_SERVER_LANE.md`](docs/ODS_LOCAL_AI_SERVER_LANE.md).
 
 Core pattern:
+
+```text
+MCP request
+  -> classify task
+  -> policy gate
+  -> route to ODS when local inference, RAG, workflow, voice, image, or agent services are approved
+  -> validate
+  -> receipt
+```
+
+## T3MP3ST Authorized Red Team Lane
