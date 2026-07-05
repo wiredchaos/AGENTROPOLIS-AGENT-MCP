@@ -109,6 +109,30 @@ MCP request
   -> log receipt
 ```
 
+## T3MP3ST Authorized Red Team Lane
+
+T3MP3ST is tracked as an optional authorized red team MCP lane.
+
+It is a governed security harness, not root authority and not a permission bypass.
+
+See [`docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md`](docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md).
+
+Core pattern:
+
+```text
+Operator intent
+  -> HERMES Dispatch
+  -> authorization scope
+  -> MCP Registry
+  -> Policy Gate
+  -> T3MP3ST lane if allowed
+  -> verification
+  -> patch proposal
+  -> receipt log
+```
+
+No written scope, no target. No policy gate, no tool execution.
+
 ## Reference Lock Pipeline
 
 The MCP kit now includes a reference-lock pipeline for reading, validating, routing, and logging AGENTROPOLIS-CREATOR character sheets, prop sheets, environment sheets, shot prompt packs, continuity reports, and handoff manifests.
