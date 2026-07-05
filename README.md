@@ -54,6 +54,14 @@ MCP request
   -> log receipt
 ```
 
+## NaraRouter Provider Lane
+
+NaraRouter is tracked as an optional OpenAI-compatible provider lane for high-volume, low-risk model routing tests.
+
+See [`docs/NARAROUTER_PROVIDER_LANE.md`](docs/NARAROUTER_PROVIDER_LANE.md).
+
+Canon lock: operator-reported free capacity must be dashboard-verified before production use. NaraRouter starts as `experimental`, `READ_ONLY`, and `DRAFT_ONLY` until receipts prove otherwise.
+
 ## Hermes Backend Routing Matrix
 
 The MCP kit now treats model rankings, search providers, extraction tools, and skill installs as capability lanes behind governance.
@@ -118,69 +126,3 @@ It is a governed security harness, not root authority and not a permission bypas
 See [`docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md`](docs/T3MP3ST_AUTHORIZED_RED_TEAM_LANE.md).
 
 Core pattern:
-
-```text
-Operator intent
-  -> HERMES Dispatch
-  -> authorization scope
-  -> MCP Registry
-  -> Policy Gate
-  -> T3MP3ST lane if allowed
-  -> verification
-  -> patch proposal
-  -> receipt log
-```
-
-No written scope, no target. No policy gate, no tool execution.
-
-## Reference Lock Pipeline
-
-The MCP kit now includes a reference-lock pipeline for reading, validating, routing, and logging AGENTROPOLIS-CREATOR character sheets, prop sheets, environment sheets, shot prompt packs, continuity reports, and handoff manifests.
-
-See [`docs/REFERENCE_LOCK_MCP_PIPELINE.md`](docs/REFERENCE_LOCK_MCP_PIPELINE.md).
-
-Core pattern:
-
-```text
-Creator package
-  -> MCP intake
-  -> schema validation
-  -> risk classification
-  -> tool authority check
-  -> generation or review action
-  -> output validation
-  -> receipt log
-```
-
-## No-Claude MCP Bootstrap
-
-This kit is not bound to Claude, Spawn, or any single provider-specific wrapper.
-
-Use the WSL bootstrap lane for Windows development and keep MCP routing provider-agnostic:
-
-- Bootstrap guide: [`docs/NO_CLAUDE_MCP_BOOTSTRAP.md`](docs/NO_CLAUDE_MCP_BOOTSTRAP.md)
-- HERMES Dispatch selects the work lane.
-- Model Council Routing selects the model lane.
-- MCP Registry selects tool access.
-- Policy Gate checks authority.
-- GitLawb Zero may provide a local coding lane when authorized.
-- Receipt logs preserve auditability.
-
-## Provider-Agnostic Terminal MCP Lane
-
-Terminal coding agents are now documented as governed MCP tool lanes, not root authority.
-
-See [`docs/PROVIDER_AGNOSTIC_TERMINAL_MCP_LANE.md`](docs/PROVIDER_AGNOSTIC_TERMINAL_MCP_LANE.md).
-
-Core pattern:
-
-```text
-MCP request
-  -> classify task
-  -> score risk
-  -> select model lane
-  -> check tool authority
-  -> route to terminal lane if allowed
-  -> validate output
-  -> log receipt
-```
