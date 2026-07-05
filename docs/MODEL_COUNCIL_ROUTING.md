@@ -11,9 +11,35 @@ This MCP kit should not bind every agent to one model. It should expose a provid
 | Fast Worker | `deepseek-ai/DeepSeek-V4-Flash` | summaries, tagging, extraction, small tool tasks |
 | Research | `zai-org/GLM-5.2`, `Qwen/Qwen3.6-35B-A3B`, `moonshotai/Kimi-K2.6` | technical research, docs, comparisons, synthesis |
 | Local Frontier / BYOK Cloud | `nvidia/GLM-5.2-NVFP4`, GLM-5.2 compatible open-weight endpoints, Nemotron/NVFP4 class endpoints | hardware-qualified local inference, BYOK cloud equivalent, long-context repo reasoning, private planning |
+| Experimental Volume / Free Tier | NaraRouter OpenAI-compatible route, dashboard-selected Mistral / DeepSeek / GLM class models | high-volume low-risk drafts, coding-agent experiments, prompt evals, non-sensitive summaries |
 | Council Review | `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4` | high-stakes review before elevated actions |
 | Lightweight / Fallback | `google/gemma-4-31B-it`, `google/gemma-4-26B-A4B-it`, `meta-llama/Llama-3.1-8B-Instruct`, `openai/gpt-oss-20b` | cheap fallback, local-ish tasks, constrained execution |
 | Open OSS | `openai/gpt-oss-120b`, `openai/gpt-oss-20b` | open-weight compatible assistant/reasoning fallback |
+
+## NaraRouter Experimental Volume Rule
+
+NaraRouter is an optional OpenAI-compatible provider lane.
+
+It is tracked for reported high free-token capacity, but the exact daily quota must be verified in the operator dashboard before production use.
+
+```text
+allowed:
+  low-risk drafts
+  non-sensitive summarization
+  coding-agent experiments
+  prompt-pack evals
+  creator workflow tests
+  fallback-chain stress tests
+
+not allowed until approved:
+  wallet-capable execution
+  private client data
+  credential handling
+  production mutation
+  regulated legal / tax / medical / financial execution
+```
+
+See `docs/NARAROUTER_PROVIDER_LANE.md` for the full lane policy.
 
 ## Local Frontier / BYOK Cloud Rule
 
@@ -55,9 +81,11 @@ Wallet, credential, file-system, deployment, and data-mutating tools require ele
 ```text
 low-risk text task
   -> fast worker lane
+  -> experimental volume lane only when data is non-sensitive
 
 code or repo task
   -> builder lane
+  -> experimental volume lane for drafts only
 
 long-context private planning or repo reasoning
   -> local frontier lane when hardware-qualified
@@ -78,3 +106,4 @@ NemoClaw is the builder and governed execution checkpoint.
 Nemotron is the research council.
 The MCP kit is the tool lane, not the mayor.
 Local frontier models are optional brains, not required infrastructure.
+NaraRouter is optional free-capacity routing, not required infrastructure.
