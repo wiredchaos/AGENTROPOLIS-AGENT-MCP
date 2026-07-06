@@ -9,6 +9,26 @@ It is not root authority.
 It is not a permission bypass.
 It is a governed offensive security harness that can be routed through MCP when scope, ownership, and authorization are verified.
 
+## Verified repository
+
+```text
+Repository: d-ufrik/T3MP3ST
+URL: https://github.com/d-ufrik/T3MP3ST
+Visibility: public
+Default branch: main
+License stated in README: AGPL-3.0
+Role: multi-agent offensive-security framework
+```
+
+Fork-specific signal from `d-ufrik/T3MP3ST`:
+
+- local OpenAI-compatible inference through a `custom` provider
+- NVIDIA NIM provider support
+- live provider `/models` discovery instead of hardcoded model lists
+- routing fix so selected provider actually drives missions, Admiral, and chat
+- active backbone visibility showing `provider · model`
+- docs for local models, routing fix, and deployment
+
 ## Placement
 
 ```text
@@ -131,13 +151,13 @@ Do not store secrets, tokens, private keys, client data, or raw sensitive payloa
 
 ## Integration status
 
-Status: watch and build candidate.
+Status: verified repository, governed build candidate.
 
-T3MP3ST is not marked live inside Agentropolis until the repository, license, installation path, safety controls, and MCP wrapper are reviewed.
+The repository exists and is public. Do not mark the lane production-live inside Agentropolis until the install path, sandbox strategy, allowed tool list, MCP wrapper, legal authorization workflow, and receipt logging are implemented in Agentropolis-controlled code.
 
 ## License note
 
-The referenced upstream post describes T3MP3ST as AGPL-3.0. Preserve upstream license obligations if code is copied, modified, hosted, or offered as a network service.
+The repository README states AGPL-3.0. Preserve upstream license obligations if code is copied, modified, hosted, wrapped, or offered as a network service.
 
 ## Doctrine
 
