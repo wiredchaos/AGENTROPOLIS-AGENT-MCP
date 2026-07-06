@@ -1,88 +1,62 @@
-# Dungeon Forge x Clawde3D MCP Contract
+# Dungeon Forge x Claw3D MCP Contract
 
-## Purpose
+## Core Lock
 
-This document defines the MCP-facing contract for using Dungeon Forge and Clawde3D inside Agentropolis.
+Agentropolis MCP is 3D-first.
 
-Dungeon Forge supplies deterministic procedural dungeon/world layouts. Clawde3D supplies the hyper-realistic 3D scene presentation layer. MCP tools and agents should treat the pair as a world-generation pipeline, not as a pixel-art dungeon toy.
+Claw3D is the spatial agent interface. Dungeon Forge is the deterministic procedural layout brain.
 
 ## Agent Responsibilities
 
-Agents may request:
+MCP agents may request and return:
 
-- generate seeded dungeon layout
-- rebuild dungeon from seed
+- generate seeded dungeon or city layout
+- rebuild space from seed
 - inspect room graph
 - assign room semantics
-- export boss path
-- export difficulty heatmap
+- export critical path
+- export difficulty map
 - produce 3D scene brief
-- produce Clawde3D rendering brief
+- produce Claw3D scene brief
 - attach NPC director hooks
 - attach quest and loot hooks
-
-## Canonical Pipeline
-
-```txt
-seed
-  -> Dungeon Forge procedural graph
-  -> semantic room roles
-  -> traversal and difficulty map
-  -> geometry translation layer
-  -> Clawde3D hyper-real scene spec
-  -> BoardForge / CHAOSPHERE runtime
-```
+- produce in-world terminal or HUD data
 
 ## Required Output Shape
-
-Agents should return:
 
 ```json
 {
   "seed": "string-or-number",
-  "theme": "ancient|molten|frost|grim|verdant|custom",
+  "theme": "ancient|molten|frost|grim|verdant|custom|city",
   "rooms": [],
   "corridors": [],
   "critical_path": [],
   "room_roles": {},
   "difficulty_map": {},
-  "clawde3d_scene_brief": "string",
+  "claw3d_scene_brief": "string",
   "npc_director_hooks": [],
   "quest_hooks": [],
   "rendering_constraints": [
-    "3D hyper-realistic",
-    "GTA-style environment detail",
+    "3D-first",
+    "Claw3D spatial interface",
+    "no dashboard-first city",
     "no pixel art",
-    "no voxel style",
-    "no low-poly look"
+    "no voxel default",
+    "no low-poly default"
   ]
 }
 ```
 
-## Visual Constraints
+## Interface Rule
 
-Always preserve this visual lock:
+Do not reduce agent operations to flat dashboards. Dashboards may exist as in-world terminals, command panels, HUD overlays, wall displays, desk screens, or fallback admin views.
 
-- hyper-realistic 3D
-- cinematic environment design
-- realistic props and materials
-- volumetric fog, liquids, lights, particles
-- GTA/open-world compatible camera language
+## Pipeline
 
-Never default to pixelated, voxel, flat-tile, or retro roguelike art direction.
-
-## Chain Relationships
-
-Chains to:
-
-- BoardForge
-- CHAOSPHERE
-- Agent NPC Director
-- Quest Generator
-- Loot Table Builder
-- Clawde3D Renderer
-- Agentropolis Creator
+```txt
+seed -> Dungeon Forge graph -> semantic map -> Claw3D scene brief -> Agentropolis 3D runtime
+```
 
 ## Final Lock
 
-Dungeon Forge is the deterministic map brain. Clawde3D is the cinematic 3D body. MCP agents coordinate the conversion between the two.
+MCP agents coordinate the conversion from deterministic procedural structure into navigable 3D Agentropolis spaces.
