@@ -54,6 +54,22 @@ MCP request
   -> log receipt
 ```
 
+## Superagent Gateway Infrastructure Lane
+
+Superagent Gateway is tracked as an optional model-routing gateway for coding agents that need one local endpoint across multiple providers.
+
+See [`docs/infrastructure/gateways/superagent-gateway.md`](docs/infrastructure/gateways/superagent-gateway.md).
+
+Canon lock: Superagent Gateway routes model calls. It does not replace MCP, Hermes, skills, memory, receipts, or AGENTROPOLIS governance.
+
+```text
+coding agent
+  -> Superagent Gateway
+  -> provider lane
+  -> validation
+  -> receipt
+```
+
 ## NaraRouter Provider Lane
 
 NaraRouter is tracked as an optional OpenAI-compatible provider lane for high-volume, low-risk model routing tests.
