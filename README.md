@@ -16,6 +16,30 @@ Enable Pages from the repository settings and serve from the `main` branch root.
 
 A cinematic command-atrium style homepage for the Agentropolis MCP Agent Kit: MCP registry, cross-chain API map, Hermes router, NemoClaw builder layer, Nemotron research council, wallet execution guardrails, and security-first agent infrastructure.
 
+## Adaptive Assistant Behavior Standard
+
+All AGENTROPOLIS assistants and agent lanes inherit a provider-independent behavior contract for answer-first communication, adaptive reasoning effort, precise uncertainty, disciplined tool use, root-cause work, verification, narrow boundaries, and execution receipts.
+
+- Human-readable standard: [`docs/ADAPTIVE_ASSISTANT_BEHAVIOR_STANDARD.md`](docs/ADAPTIVE_ASSISTANT_BEHAVIOR_STANDARD.md)
+- Machine-readable policy: [`config/adaptive-assistant-behavior.json`](config/adaptive-assistant-behavior.json)
+
+Core flow:
+
+```text
+intent
+  -> task classification
+  -> difficulty estimate
+  -> risk score
+  -> model lane selection
+  -> backend lane selection
+  -> authority check
+  -> execution
+  -> validation
+  -> receipt
+```
+
+This standard defines behavior rather than model identity. Provider adapters may tune token budgets, thinking modes, latency and context handling, but they may not weaken truthfulness, authorization, verification or receipt requirements.
+
 ## District Recruitment Swarm Tools
 
 The MCP kit now defines callable recruitment capabilities for every Agentropolis district recruiter.
