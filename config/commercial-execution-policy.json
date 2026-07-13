@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "authority": {
+    "commercialPolicyOwner": "wiredchaos/agentropolis",
+    "meteringExecutor": "wiredchaos/AGENTROPOLIS-AGENT-MCP",
+    "billingInfrastructure": "wiredchaos/AGENTROPOLIS-DEPLOY"
+  },
+  "sequence": [
+    "classify_task",
+    "score_risk",
+    "check_authority",
+    "check_entitlement",
+    "request_cost_estimate",
+    "reserve_budget",
+    "require_human_approval_when_needed",
+    "execute",
+    "validate",
+    "emit_receipt",
+    "emit_usage_event",
+    "handoff_settlement"
+  ],
+  "decisions": [
+    "ALLOW",
+    "DENY",
+    "REQUIRE_APPROVAL",
+    "REQUIRE_REESTIMATE",
+    "RECONCILIATION_REQUIRED"
+  ],
+  "billableDefaults": {
+    "authorityDenied": false,
+    "entitlementDenied": false,
+    "scopeDenied": false,
+    "approvalMissing": false,
+    "budgetReservationFailed": false,
+    "duplicateReplay": false,
+    "providerNotInvoked": false,
+    "infrastructureFailureBeforeUsefulOutput": false,
+    "providerConfirmedFullRefund": false,
+    "validatedSuccessfulExecution": true
+  },
+  "requiredUsageLinks": [
+    "organizationId",
+    "mandateId",
+    "agentId",
+    "districtId",
+    "receiptId",
+    "pricingPolicyVersion",
+    "idempotencyKey"
+  ],
+  "riskApproval": {
+    "LOW": "policy_defined",
+    "MEDIUM": "policy_defined",
+    "HIGH": "human_required",
+    "CRITICAL": "human_required_separate_approver"
+  },
+  "idempotencyTemplates": {
+    "reservation": "reservation:{mandateId}:{attemptKey}",
+    "usage": "usage:{receiptId}:{usageClass}:{sequence}",
+    "settlement": "settlement:{sourceType}:{sourceId}:{direction}"
+  },
+  "prohibitedCapabilities": [
+    "alter_retail_pricing",
+    "hold_raw_payment_credentials",
+    "hold_unrestricted_treasury_keys",
+    "approve_own_high_risk_execution",
+    "post_billable_usage_without_receipt"
+  ],
+  "explicitExclusions": [
+    "payment_collection",
+    "wallet_custody",
+    "invoice_delivery",
+    "tax_calculation",
+    "automatic_publisher_payouts",
+    "real_money_gaming_settlement"
+  ]
+}
