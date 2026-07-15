@@ -1,0 +1,64 @@
+{
+  "name": "atralith-agent-kit",
+  "version": "0.1.0",
+  "description": "MCP-native language and coordination infrastructure for autonomous agents.",
+  "protocol": "atranic/0.1",
+  "governance": {
+    "parent_grid": "AGENTROPOLIS",
+    "default_trust": "untrusted",
+    "receipt_required_for_execution": true,
+    "human_review_levels": ["high", "critical"]
+  },
+  "tools": [
+    {
+      "name": "atralith_declare_capabilities",
+      "value_effects": ["improve_routing", "enable_commerce"]
+    },
+    {
+      "name": "atralith_create_mandate",
+      "value_effects": ["save_operator_time", "reduce_risk"]
+    },
+    {
+      "name": "atralith_validate_message",
+      "value_effects": ["reduce_risk", "save_tokens"]
+    },
+    {
+      "name": "atralith_negotiate_mandate",
+      "value_effects": ["enable_commerce", "earn_revenue"]
+    },
+    {
+      "name": "atralith_issue_receipt",
+      "value_effects": ["increase_reputation", "reduce_risk"]
+    },
+    {
+      "name": "atralith_verify_receipt",
+      "value_effects": ["reduce_risk", "increase_reputation"]
+    },
+    {
+      "name": "atralith_match_agent",
+      "value_effects": ["improve_routing", "enable_commerce"]
+    },
+    {
+      "name": "atralith_calculate_revenue_split",
+      "value_effects": ["enable_commerce", "save_operator_time"]
+    },
+    {
+      "name": "atralith_translate",
+      "value_effects": ["save_tokens", "save_operator_time"]
+    }
+  ],
+  "resources": [
+    "atralith://protocol/spec",
+    "atralith://protocol/schema",
+    "atralith://lexicon/core",
+    "atralith://receipts/templates",
+    "atralith://security/policies"
+  ],
+  "prompts": [
+    "create_capability_declaration",
+    "convert_task_to_mandate",
+    "review_mandate_for_ambiguity",
+    "negotiate_scope_budget_and_evidence",
+    "produce_execution_receipt"
+  ]
+}
