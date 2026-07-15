@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentropolis.example/schemas/atranic-envelope.schema.json",
+  "title": "Atranic Protocol Envelope v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "message_id",
+    "message_type",
+    "timestamp",
+    "sender",
+    "intent",
+    "authority",
+    "payload",
+    "risk"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "atranic/0.1"
+    },
+    "message_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 200
+    },
+    "message_type": {
+      "enum": [
+        "identity",
+        "capability_declaration",
+        "mandate",
+        "offer",
+        "acceptance",
+        "status",
+        "result",
+        "receipt",
+        "dispute",
+        "reputation_attestation"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sender": {
+      "$ref": "#/$defs/agentIdentity"
+    },
+    "recipient": {
+      "oneOf": [
+        { "$ref": "#/$defs/agentIdentity" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/agentIdentity" },
+          "minItems": 1
+        }
+      ]
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "allowed_actions", "forbidden_actions"],
+      "properties": {
+        "mode": {
+          "enum": ["observe", "draft", "execute", "settle", "govern"]
+        },
+        "allowed_actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "payload": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean", "default": false },
+        "types": {
+          "type": "array",
+          "items": {
+            "enum": ["citation", "artifact", "test", "signature", "receipt", "human_review"]
+          },
+          "uniqueItems": true
+        },
+        "minimum_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "currency": { "type": "string", "minLength": 1, "maxLength": 32 },
+        "amount": { "type": "number", "minimum": 0 },
+        "maximum_amount": { "type": "number", "minimum": 0 },
+        "payment_condition": { "type": "string", "maxLength": 1000 },
+        "revenue_split": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["recipient", "share"],
+            "properties": {
+              "recipient": { "type": "string" },
+              "share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+            }
+          }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "categories", "human_review_required"],
+      "properties": {
+        "level": { "enum": ["low", "moderate", "high", "critical"] },
+        "categories": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "privacy",
+              "security",
+              "financial",
+              "legal",
+              "medical",
+              "identity",
+              "governance",
+              "external_side_effect"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "human_review_required": { "type": "boolean" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parent_message_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "source_uris": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" },
+          "uniqueItems": true
+        },
+        "runtime": { "type": "string" },
+        "model": { "type": "string" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": { "type": "string" },
+        "key_id": { "type": "string" },
+        "value": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "agentIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "role": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "runtime": { "type": "string", "maxLength": 120 },
+        "proof": { "type": "string", "maxLength": 1000 }
+      }
+    }
+  }
+}
