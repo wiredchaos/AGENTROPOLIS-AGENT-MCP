@@ -1,0 +1,15 @@
+schema_version: agentropolis.mcp-adapter-registry/v1
+namespace: creator
+owner: AGENTROPOLIS-CREATOR
+status: experimental
+adapters:
+  - id: creator.blockout
+    upstream: https://github.com/wassermanproductions/blockout
+    license: Apache-2.0
+    execution: local_desktop
+    platforms: [windows]
+    network_default: deny
+    capabilities:
+      - project.create
+      - scene.block
+      - camera.chore
