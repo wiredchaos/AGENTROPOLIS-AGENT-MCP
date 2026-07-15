@@ -1,0 +1,31 @@
+{
+  "name": "atralith-agent-kit",
+  "version": "0.1.0",
+  "protocol": "atranic/0.1",
+  "standard_repository": "https://github.com/wiredchaos/AGENTROPOLIS-ATG",
+  "role": "reference MCP implementation for ATG",
+  "governance": {
+    "parent_grid": "AGENTROPOLIS",
+    "default_trust": "untrusted",
+    "receipt_required_for_execution": true,
+    "human_review_levels": ["high", "critical"]
+  },
+  "tools": [
+    "atralith_declare_capabilities",
+    "atralith_create_mandate",
+    "atralith_validate_message",
+    "atralith_negotiate_mandate",
+    "atralith_issue_receipt",
+    "atralith_verify_receipt",
+    "atralith_match_agent",
+    "atralith_calculate_revenue_split",
+    "atralith_translate"
+  ],
+  "resources": [
+    "atralith://protocol/spec",
+    "atralith://protocol/schema",
+    "atralith://lexicon/core",
+    "atralith://receipts/templates",
+    "atralith://security/policies"
+  ]
+}
