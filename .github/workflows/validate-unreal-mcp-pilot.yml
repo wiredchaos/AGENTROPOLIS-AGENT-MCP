@@ -1,0 +1,29 @@
+name: Validate Unreal MCP Pilot
+
+on:
+  pull_request:
+    paths:
+      - "config/unreal-mcp-adapter.json"
+      - "pilot/unreal-mcp/**"
+      - "scripts/validate_unreal_mcp_pilot.py"
+      - ".github/workflows/validate-unreal-mcp-pilot.yml"
+  push:
+    branches: [main]
+    paths:
+      - "config/unreal-mcp-adapter.json"
+      - "pilot/unreal-mcp/**"
+      - "scripts/validate_unreal_mcp_pilot.py"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate contracts
+        run: python scripts/validate_unreal_mcp_pilot.py
