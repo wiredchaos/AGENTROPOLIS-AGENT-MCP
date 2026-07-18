@@ -1,0 +1,27 @@
+{
+  "request_id": "replace-with-uuid",
+  "mandate_id": "replace-with-approved-mandate-id",
+  "adapter": "unreal-engine",
+  "project": "replace-with-approved-test-project",
+  "map": "/Game/Maps/ReplaceWithApprovedTestMap",
+  "operation_class": "READ",
+  "requested_capabilities": [
+    "list_toolsets",
+    "describe_toolset",
+    "inspect_project",
+    "inspect_map",
+    "capture_editor_screenshot"
+  ],
+  "risk_tier": "LOW",
+  "approval_state": "APPROVED",
+  "validation_plan": [
+    "verify_loopback_endpoint",
+    "discover_live_toolsets",
+    "confirm_project_identity",
+    "confirm_map_identity",
+    "capture_structural_inventory",
+    "capture_editor_screenshot",
+    "write_receipt"
+  ],
+  "receipt_required": true
+}
