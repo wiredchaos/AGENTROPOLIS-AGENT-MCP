@@ -1,0 +1,19 @@
+{
+  "receipt_id": "replace-with-uuid",
+  "request_id": "replace-with-request-id",
+  "mandate_id": "replace-with-mandate-id",
+  "adapter": "unreal-engine",
+  "tool_version": "record-at-runtime",
+  "endpoint_class": "LOOPBACK_ONLY",
+  "live_toolsets": [],
+  "project": "replace-with-approved-test-project",
+  "map": "/Game/Maps/ReplaceWithApprovedTestMap",
+  "operations": [],
+  "changed_packages": [],
+  "validation_results": [],
+  "evidence": [],
+  "warnings": [],
+  "approval_state": "PENDING",
+  "started_at": "replace-with-iso-8601",
+  "completed_at": "replace-with-iso-8601"
+}
