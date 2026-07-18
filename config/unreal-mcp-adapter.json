@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterId": "unreal-engine",
+  "displayName": "Unreal MCP",
+  "status": "DISABLED_BY_DEFAULT",
+  "pilotMode": "READ_ONLY",
+  "endpoint": "http://127.0.0.1:8000/mcp",
+  "networkBoundary": "LOOPBACK_ONLY",
+  "authenticationAssumption": "NONE",
+  "parallelMutationsAllowed": false,
+  "receiptRequired": true,
+  "allowedCapabilities": [
+    "list
