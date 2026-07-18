@@ -10,4 +10,41 @@
   "parallelMutationsAllowed": false,
   "receiptRequired": true,
   "allowedCapabilities": [
-    "list
+    "list_toolsets",
+    "describe_toolset",
+    "inspect_project",
+    "inspect_map",
+    "inspect_actor",
+    "capture_editor_screenshot"
+  ],
+  "deniedCapabilities": [
+    "create_actor",
+    "modify_actor",
+    "delete_actor",
+    "modify_blueprint",
+    "save_package",
+    "render",
+    "export",
+    "publish"
+  ],
+  "activationRequirements": [
+    "unreal_editor_running",
+    "unreal_mcp_plugin_enabled",
+    "alltoolsets_plugin_enabled",
+    "loopback_endpoint_verified",
+    "approved_test_project",
+    "approved_test_map",
+    "operator_present",
+    "receipt_destination_configured"
+  ],
+  "killConditions": [
+    "endpoint_not_loopback",
+    "project_identity_mismatch",
+    "map_identity_mismatch",
+    "write_or_mutation_requested",
+    "tool_schema_not_discovered_live",
+    "receipt_generation_failed",
+    "authority_revoked"
+  ],
+  "canonicalContract": "docs/UNREAL_MCP_EXECUTION_LANE.md"
+}
