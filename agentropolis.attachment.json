@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "wiredchaos/AGENTROPOLIS-AGENT-MCP",
+  "parent": "wiredchaos/agentropolis",
+  "layer": "infrastructure",
+  "role": "Governed MCP, tool, browser, wallet, model-routing, and execution membrane for the Agentropolis Intelligence Grid",
+  "status": "confirmed",
+  "district": null,
+  "application": "agent-mcp-kit",
+  "inherits": [
+    "identity",
+    "mandates",
+    "policy-risk",
+    "dispatch",
+    "memory",
+    "skill-registry",
+    "observability",
+    "receipts",
+    "audit"
+  ],
+  "dependencies": [
+    "wiredchaos/agentropolis"
+  ],
+  "routes": [
+    "mcp://registry",
+    "mcp://tools",
+    "mcp://browser",
+    "mcp://wallet",
+    "mcp://execution",
+    "mcp://model-routing"
+  ],
+  "authority_boundary": {
+    "may_redefine_city_law": false,
+    "may_bypass_policy": false,
+    "may_self_grant_permissions": false,
+    "may_replace_shared_runtime": false
+  },
+  "validation": {
+    "owner": "NEURO",
+    "tests": [
+      "python -m json.tool agentropolis.attachment.json",
+      "test -f index.html",
+      "test -f docs/ADAPTIVE_ASSISTANT_BEHAVIOR_STANDARD.md",
+      "test -f config/adaptive-assistant-behavior.json"
+    ],
+    "receipt_required": true
+  }
+}
