@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "construction-vision-operator-policy",
+  "version": "1.0.0",
+  "provider_neutral": true,
+  "preferred_candidate": "Kimi K3",
+  "ownership": {
+    "construction_package": "wiredchaos/AGENTROPOLIS-CREATOR",
+    "orchestration": "wiredchaos/ASBE",
+    "dispatch": "HERMES",
+    "authority": "wiredchaos/AGENTROPOLIS-AGENT-MCP"
+  },
+  "modes": {
+    "INSPECT": {
+      "risk": "low",
+      "write": false,
+      "allowed": [
+        "list_scene_objects",
+        "list_level_actors",
+        "inspect_hierarchy",
+        "inspect_materials",
+        "inspect_metadata",
+        "capture_viewport",
+        "render_preview",
+        "read_approved_scripts",
+        "export_report"
+      ]
+    },
+    "PROPOSE": {
+      "risk": "low",
+      "write": false,
+      "required_output": [
+        "observed_defect",
+        "mandate_conflict",
+        "affected_scope",
+        "proposed_actions",
+        "protected_scope",
+        "risk_level",
+        "expected_evidence",
+        "rollback_path"
+      ]
+    },
+    "EXECUTE": {
+      "risk": "variable",
+      "write": true,
+      "requires": [
+        "approved_request_contract",
+        "allowed_action",
+        "approved_write_root",
+        "serialized_editor_lock",
+        "checkpoint_for_medium_or_high_risk",
+        "bounded_operation_count",
+        "post_operation_evidence",
+        "receipt"
+      ]
+    },
+    "VALIDATE": {
+      "risk": "low",
+      "write": false,
+      "allowed": [
+        "structural_validation",
+        "visual_diff_validation",
+        "performance_validation",
+        "provenance_validation",
+        "export_validation"
+      ]
+    }
+  },
+  "adapters": {
+    "blender_mcp": {
+      "state": "existing_lane",
+      "allowed_medium_risk": [
+        "create_candidate_object",
+        "modify_approved_material",
+        "set_geometry_nodes_parameter",
+        "execute_approved_bpy_script",
+        "move_approved_camera",
+        "modify_approved_light",
+        "export_test_interchange"
+      ],
+      "blocked_without_explicit_approval": [
+        "delete_production_collection",
+        "overwrite_approved_source_file",
+        "execute_script_outside_write_root",
+        "publish_export"
+      ]
+    },
+    "unreal_mcp": {
+      "state": "existing_lane",
+      "allowed_medium_risk": [
+        "place_approved_actor",
+        "modify_approved_material_instance",
+        "modify_approved_light",
+        "modify_approved_camera",
+        "create_approved_level_sequence",
+        "run_bounded_playtest",
+        "render_preview"
+      ],
+      "blocked_without_explicit_approval": [
+        "modify_unrelated_project_settings",
+        "alter_protected_map",
+        "alter_protected_asset",
+        "run_uncontracted_editor_command",
+        "package_production_build",
+        "publish_build"
+      ]
+    },
+    "unity_mcp": {
+      "state": "evaluate",
+      "default_mode": "INSPECT"
+    },
+    "godot_mcp": {
+      "state": "evaluate",
+      "default_mode": "INSPECT"
+    },
+    "playcanvas_webxr": {
+      "state": "evaluate",
+      "default_mode": "INSPECT"
+    },
+    "react_three_fiber_threejs": {
+      "state": "aligned",
+      "default_mode": "PROPOSE"
+    },
+    "supersplat_3dgs": {
+      "state": "evaluate",
+      "default_mode": "INSPECT"
+    },
+    "openusd": {
+      "state": "evaluate",
+      "default_mode": "VALIDATE"
+    }
+  },
+  "candidate_producers": {
+    "tools": [
+      "hy_world_2",
+      "hunyuan3d",
+      "trellis",
+      "triposr",
+      "instantmesh",
+      "stable_fast_3d",
+      "infinigen",
+      "wave_function_collapse",
+      "markovjunior"
+    ],
+    "default_authority": "candidate_only",
+    "required_metadata": [
+      "source",
+      "license",
+      "model",
+      "version",
+      "prompt",
+      "settings",
+      "destination",
+      "performance",
+      "approval_state"
+    ],
+    "blocked": [
+      "overwrite_canonical_asset",
+      "direct_production_import",
+      "self_approval",
+      "unbounded_batch"
+    ]
+  },
+  "hard_rules": [
+    "operator_cannot_expand_own_authority",
+    "one_writer_per_project_session",
+    "medium_and_high_risk_actions_require_reversible_diff",
+    "production_mutation_requires_approval",
+    "public_publish_requires_human_approval",
+    "every_execution_requires_receipt"
+  ]
+}
