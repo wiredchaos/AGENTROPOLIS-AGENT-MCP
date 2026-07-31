@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "agentropolis-agent-mcp",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-31",
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/mcp", "/mcp/*", "/health", "/api/*", "/.well-known/*"]
+  },
+  "d1_databases": [{ "binding": "DB" }],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "SERVICE_VERSION": "1.0.0",
+    "MCP_AUTH_MODE": "public-read",
+    "PUBLIC_MCP_ENABLED": "true",
+    "ALLOWED_ORIGINS": "https://playground.ai.cloudflare.com,http://localhost:5173,http://127.0.0.1:5173",
+    "RATE_LIMIT_WINDOW_SECONDS": "60",
+    "RATE_LIMIT_MAX_REQUESTS": "120",
+    "MAX_REQUEST_BYTES": "131072"
+  }
+}

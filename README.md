@@ -1,179 +1,80 @@
 # AGENTROPOLIS AGENT MCP KIT
 
-Animated static homepage for the Agentropolis MCP Agent Kit.
+The governed remote MCP capability membrane for the **Agentropolis Intelligence Grid**.
 
-## Open locally
+This repository deploys as one Cloudflare Worker serving a cyber-noir command surface, a stateless Streamable HTTP MCP endpoint, five public read-only tools, D1 execution receipts, security events, rate limiting, and operator-only receipt APIs.
+
+> Infrastructure becomes the terrain others must build on.
+
+## Architecture
+
+```text
+MCP client / browser
+  -> Cloudflare request guards
+  -> authentication + rate limit
+  -> MCP capability membrane
+  -> bounded READ_ONLY tool
+  -> D1 receipt
+  -> response
+```
+
+## MCP tools
+
+- `route_front_desk`
+- `list_agentropolis_districts`
+- `assess_mcp_request_risk`
+- `get_agentropolis_capability_map`
+- `get_cloudflare_deployment_manifest`
+
+No wallet signing, payment, publishing, permission mutation, settlement, or destructive tool is registered.
+
+## Endpoints
+
+```text
+GET  /                         command surface
+GET  /health                   Worker and D1 health
+GET  /.well-known/mcp.json     deployment manifest
+POST /mcp                      Streamable HTTP MCP
+GET  /api/tools                public tool registry
+GET  /api/districts            district registry
+POST /api/route                Front Desk routing
+POST /api/risk                 risk assessment
+GET  /api/receipts             operator-only receipts
+GET  /api/receipts/:id         operator-only receipt
+```
+
+## Validate
 
 ```bash
-open index.html
+npm ci
+npm run validate
+npm test
+npm run deploy:dry
 ```
 
-## GitHub Pages
-
-Enable Pages from the repository settings and serve from the `main` branch root.
-
-## What this is
-
-A cinematic command-atrium style homepage for the Agentropolis MCP Agent Kit: MCP registry, cross-chain API map, Hermes router, NemoClaw builder layer, Nemotron research council, wallet execution guardrails, and security-first agent infrastructure.
-
-## Adaptive Assistant Behavior Standard
-
-All AGENTROPOLIS assistants and agent lanes inherit a provider-independent behavior contract for answer-first communication, adaptive reasoning effort, precise uncertainty, disciplined tool use, root-cause work, verification, narrow boundaries, and execution receipts.
-
-- Human-readable standard: [`docs/ADAPTIVE_ASSISTANT_BEHAVIOR_STANDARD.md`](docs/ADAPTIVE_ASSISTANT_BEHAVIOR_STANDARD.md)
-- Machine-readable policy: [`config/adaptive-assistant-behavior.json`](config/adaptive-assistant-behavior.json)
-
-Core flow:
-
-```text
-intent
-  -> task classification
-  -> difficulty estimate
-  -> risk score
-  -> model lane selection
-  -> backend lane selection
-  -> authority check
-  -> execution
-  -> validation
-  -> receipt
-```
-
-This standard defines behavior rather than model identity. Provider adapters may tune token budgets, thinking modes, latency and context handling, but they may not weaken truthfulness, authorization, verification or receipt requirements.
-
-## District Recruitment Swarm Tools
-
-The MCP kit now defines callable recruitment capabilities for every Agentropolis district recruiter.
-
-```text
-SLM scout -> LLM closer -> ML intern -> register agent citizen
-```
-
-See [`docs/DISTRICT_RECRUITMENT_SWARM.md`](docs/DISTRICT_RECRUITMENT_SWARM.md).
-
-Core MCP capabilities:
-
-- `scan_recruitment_leads`
-- `score_recruitment_lead`
-- `draft_recruitment_outreach`
-- `register_agent_citizen`
-
-Recruiters can invite and onboard. Sensitive vault, wallet, settlement, or governance actions still require policy gates, verification, and receipts.
-
-## Model Council Routing
-
-The MCP kit now includes a provider-aware routing map for selecting the right model lane before tool execution.
-
-See [`docs/MODEL_COUNCIL_ROUTING.md`](docs/MODEL_COUNCIL_ROUTING.md).
-
-Core pattern:
-
-```text
-MCP request
-  -> classify task
-  -> score risk
-  -> select model lane
-  -> check tool authority
-  -> execute
-  -> validate output
-  -> log receipt
-```
-
-## Superagent Gateway Infrastructure Lane
-
-Superagent Gateway is tracked as an optional model-routing gateway for coding agents that need one local endpoint across multiple providers.
-
-See [`docs/infrastructure/gateways/superagent-gateway.md`](docs/infrastructure/gateways/superagent-gateway.md).
-
-Canon lock: Superagent Gateway routes model calls. It does not replace MCP, Hermes, skills, memory, receipts, or AGENTROPOLIS governance.
-
-```text
-coding agent
-  -> Superagent Gateway
-  -> provider lane
-  -> validation
-  -> receipt
-```
-
-## NaraRouter Provider Lane
-
-NaraRouter is tracked as an optional OpenAI-compatible provider lane for high-volume, low-risk model routing tests.
-
-See [`docs/NARAROUTER_PROVIDER_LANE.md`](docs/NARAROUTER_PROVIDER_LANE.md).
-
-Canon lock: operator-reported free capacity must be dashboard-verified before production use. NaraRouter starts as `experimental`, `READ_ONLY`, and `DRAFT_ONLY` until receipts prove otherwise.
-
-## Hermes Backend Routing Matrix
-
-The MCP kit now treats model rankings, search providers, extraction tools, and skill installs as capability lanes behind governance.
-
-See [`docs/HERMES_BACKEND_ROUTING_MATRIX.md`](docs/HERMES_BACKEND_ROUTING_MATRIX.md).
-
-Core pattern:
-
-```text
-MCP request
-  -> classify task
-  -> select model lane
-  -> select backend lane
-  -> check authority
-  -> validate
-  -> receipt
-```
-
-Backends are replaceable. Skills remain stable. Governance decides what can execute.
-
-## UNBROKER Privacy Lane
-
-UNBROKER is documented as a governed Hermes security skill lane for personal-data broker discovery, deletion requests, verification, receipts, and re-scans.
-
-Install path:
+## Deploy
 
 ```bash
-hermes update
-hermes skills install official/security/unbroker
+npm run deploy
 ```
 
-See [`docs/UNBROKER_MCP_PRIVACY_LANE.md`](docs/UNBROKER_MCP_PRIVACY_LANE.md).
+Wrangler automatically provisions D1 because `wrangler.jsonc` declares the `DB` binding without an account-specific resource ID. The deploy command then applies `migrations/0001_core.sql`.
 
-## GitLawb Zero MCP Execution Lane
+For Cloudflare Workers Builds, custom domains, secrets, smoke tests, and rollback, see [`docs/CLOUDFLARE_DEPLOYMENT.md`](docs/CLOUDFLARE_DEPLOYMENT.md).
 
-GitLawb Zero is incorporated as an optional local coding execution lane.
+## Operator token
 
-It is a tool lane candidate, not the brain and not unrestricted authority.
-
-See [`docs/GITLAWB_ZERO_MCP_EXECUTION_LANE.md`](docs/GITLAWB_ZERO_MCP_EXECUTION_LANE.md).
-
-Core pattern:
-
-```text
-MCP request
-  -> classify task
-  -> score risk
-  -> select model lane
-  -> check tool authority
-  -> route to GitLawb Zero if local coding is allowed
-  -> generate patch candidate
-  -> run validation
-  -> log receipt
+```bash
+npx --yes wrangler@4.114.0 secret put MCP_API_TOKEN
 ```
 
-## ODS Local AI Server Lane
+Operator receipt APIs always require this encrypted Worker secret. Set `MCP_AUTH_MODE` to `token` to protect the full MCP endpoint.
 
-ODS is tracked as an optional local AI server lane for workstation, homelab, and private AI stack deployments.
+## Security invariants
 
-It is infrastructure, not a district, not the brain, and not unrestricted authority.
-
-See [`docs/ODS_LOCAL_AI_SERVER_LANE.md`](docs/ODS_LOCAL_AI_SERVER_LANE.md).
-
-Core pattern:
-
-```text
-MCP request
-  -> classify task
-  -> policy gate
-  -> route to ODS when local inference, RAG, workflow, voice, image, or agent services are approved
-  -> validate
-  -> receipt
-```
-
-## T3MP3ST Authorized Red Team Lane
+- Authority is a runtime constraint, not a prompt.
+- Public tools remain read-only.
+- Raw request bodies and bearer tokens are not stored in receipts.
+- Every successful tool call returns a receipt ID and persistence status.
+- Browser-originated cross-site requests must pass the origin allowlist.
+- High-impact actions require a separate authenticated execution corridor.

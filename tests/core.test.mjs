@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{TOOLS,routeFrontDesk,assessRisk,validateArguments,capabilityMap}from'../src/core.js';
+test('registers five read-only tools',()=>{assert.equal(TOOLS.length,5);for(const t of TOOLS){assert.equal(t.annotations.readOnlyHint,true);assert.equal(t.annotations.destructiveHint,false)}});
+test('routes Cloudflare MCP work to CHAOS CODE',()=>{const r=routeFrontDesk('Deploy the MCP runtime to Cloudflare from GitHub');assert.equal(r.district,'CHAOS CODE');assert.equal(r.authority,'READ_ONLY')});
+test('triggers credential safety slowdown',()=>{const r=routeFrontDesk('Support DM says verify now with my seed phrase');assert.equal(r.safetyFlag,true);assert.match(r.safetyNote,/Never provide seed phrases/i)});
+test('blocks irreversible and destructive work',()=>{const r=assessRisk({action:'delete production',dataSensitivity:'secret',externalImpact:'irreversible',destructiveAction:true});assert.equal(r.decision,'BLOCKED');assert.equal(r.authority,'NO_AUTHORITY');assert.equal(r.approvalRequired,true)});
+test('validates tool arguments',()=>{const t=TOOLS.find(x=>x.name==='route_front_desk');assert.equal(validateArguments(t,{request:'build this'}),null);assert.match(validateArguments(t,{request:'',extra:true}),/unexpected argument|non-empty/)});
+test('capability map preserves three layers',()=>{const map=capabilityMap();assert.deepEqual(Object.keys(map.layers),['infrastructure','districts','applications']);assert.equal(map.authorityBoundary.selfEscalation,false)});
