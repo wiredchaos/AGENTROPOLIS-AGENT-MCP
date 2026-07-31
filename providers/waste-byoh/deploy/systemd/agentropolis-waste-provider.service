@@ -1,0 +1,22 @@
+[Unit]
+Description=AGENTROPOLIS WASTE BYOH Provider
+After=network-online.target waste.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=agentropolis
+Group=agentropolis
+WorkingDirectory=/opt/agentropolis/waste-provider
+EnvironmentFile=/etc/agentropolis/waste-provider.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/agentropolis/waste-provider
+
+[Install]
+WantedBy=multi-user.target
