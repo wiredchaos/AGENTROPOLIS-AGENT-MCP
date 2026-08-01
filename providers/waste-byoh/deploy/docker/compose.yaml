@@ -1,0 +1,17 @@
+services:
+  waste-provider:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    env_file: ../../.env
+    network_mode: host
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ../../data:/app/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

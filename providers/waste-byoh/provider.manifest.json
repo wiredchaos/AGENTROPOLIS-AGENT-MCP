@@ -1,0 +1,13 @@
+{
+  "id": "waste-byoh",
+  "version": "0.1.0",
+  "layer": "infrastructure",
+  "district": "NEURO",
+  "role": "sovereign sparse-MoE inference provider",
+  "protocol": "openai-compatible",
+  "endpoints": ["/v1/chat/completions", "/v1/completions", "/health", "/ready"],
+  "concurrency": {"mode": "serialized", "max_active_generations": 1},
+  "authority": "inference-only",
+  "receipts": true,
+  "cloud": {"supported": true, "requirement": "local NVMe attached to host"}
+}

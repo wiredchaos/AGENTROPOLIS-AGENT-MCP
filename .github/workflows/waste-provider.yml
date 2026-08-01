@@ -1,0 +1,31 @@
+name: waste-provider
+
+on:
+  pull_request:
+    paths:
+      - "providers/waste-byoh/**"
+      - ".github/workflows/waste-provider.yml"
+  push:
+    branches: [main]
+    paths:
+      - "providers/waste-byoh/**"
+      - ".github/workflows/waste-provider.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: providers/waste-byoh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - run: node --check src/server.js
+      - run: node --check src/config.js
+      - run: node --check src/policy.js
