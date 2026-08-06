@@ -7,8 +7,62 @@
 <meta name="theme-color" content="#020408">
 <title>Agentropolis 3D</title>
 <link rel="stylesheet" href="./styles.css">
-<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.3.1","react-dom/client":"https://esm.sh/react-dom@18.3.1/client","three":"https://esm.sh/three@0.167.1","@react-three/fiber":"https://esm.sh/@react-three/fiber@8.17.10?external=react,react-dom,three","@react-three/drei":"https://esm.sh/@react-three/drei@9.114.3?external=react,react-dom,three,@react-three/fiber","htm":"https://esm.sh/htm@3.1.1"}}</script>
-<script type="module" src="./main.js"></script>
+<script src="./main.js" defer></script>
 </head>
-<body><div id="root"><div class="boot">INITIALIZING AGENTROPOLIS 3D...</div></div></body>
+<body>
+<div id="root">
+  <video id="heroVideo" class="hero-video" muted loop playsinline></video>
+  <canvas id="cityCanvas" aria-label="Interactive Agentropolis 3D city"></canvas>
+  <div class="scene-shade"></div>
+
+  <header>
+    <div class="brand"><i></i>AGENTROPOLIS 3D <small>THE INTELLIGENCE GRID</small></div>
+    <div id="topStatus">IDLE · HERMES MCP</div>
+  </header>
+
+  <section class="hero">
+    <p>3D CITY · GOVERNED MCP · HUMAN MISSION CONTROL</p>
+    <h1>Enter Agentropolis.<br>Dock HERMES.</h1>
+    <span>Infrastructure becomes the terrain others must build on.</span>
+  </section>
+
+  <aside>
+    <p>SELECTED STRUCTURE</p>
+    <h2 id="selectedName">HERMES DOCK</h2>
+    <span id="selectedRole">Operator docking terminal for remote MCP configuration.</span>
+    <b id="selectedStatus">ready</b>
+  </aside>
+
+  <nav>
+    <button data-panel="city" class="active">CITY</button>
+    <button data-panel="hermes">HERMES DOCK</button>
+    <button data-panel="media">HERO MEDIA</button>
+  </nav>
+
+  <section id="cityPanel" class="panel open">
+    <div class="title"><p>CITY DIRECTORY</p><h2>Districts are institutions.</h2></div>
+    <div id="directory" class="directory"></div>
+  </section>
+
+  <section id="hermesPanel" class="panel">
+    <div class="title"><p>HERMES INSTALL TERMINAL</p><h2>Dock through the governed remote lane.</h2></div>
+    <div class="row"><input id="baseUrl" placeholder="https://YOUR-WORKER.workers.dev"><button id="checkRuntime">CHECK RUNTIME</button></div>
+    <div id="runtimeReadout" class="readout">Waiting for a Worker URL.</div>
+    <div class="modes"><button data-mode="native" class="active">NATIVE HTTP</button><button data-mode="bridge">NODE BRIDGE</button></div>
+    <pre id="configOutput"></pre>
+    <button id="copyConfig" class="primary">COPY MCP.JSON BLOCK</button>
+  </section>
+
+  <section id="mediaPanel" class="panel">
+    <div class="title"><p>HERO MEDIA DOCK</p><h2>Project your video across the city skyline.</h2></div>
+    <div class="upload"><input id="heroUpload" type="file" accept="video/mp4,video/webm,video/ogg"><label for="heroUpload"><strong>UPLOAD VIDEO HERO</strong><span>MP4 · WebM · Ogg · 200 MB local ceiling</span></label></div>
+    <div id="mediaReadout" class="readout">No operator video loaded.</div>
+    <div id="mediaMeta" class="meta" hidden></div>
+    <div class="actions"><button id="clearHero" disabled>CLEAR LOCAL HERO</button><a href="../assets/" target="_blank" rel="noreferrer">PUBLIC HERO PATH</a></div>
+    <p class="note">Local upload persists in this browser through IndexedDB. Public uploads require a deployed asset or governed Cloudflare R2 corridor.</p>
+  </section>
+
+  <footer>Identity → Mandate → Plan → Execute → Receipt → Audit</footer>
+</div>
+</body>
 </html>
