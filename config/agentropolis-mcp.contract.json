@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "service": "agentropolis-agent-mcp",
+  "base_url": "",
+  "health_url": "",
+  "manifest_url": "",
+  "mcp_url": "",
+  "health_path": "/health",
+  "manifest_path": "/.well-known/mcp.json",
+  "endpoint_path": "/mcp",
+  "transport": "streamable-http",
+  "authority": "public-read",
+  "write_default": "deny",
+  "human_approval_required": true,
+  "clients": [
+    "hermes-agent",
+    "hermes-city",
+    "agentropolis-mission-control",
+    "agentropolis-mcp-3d"
+  ],
+  "configured": false,
+  "note": "The deployed Worker hostname is operator-supplied and never committed to repositories. Clients resolve base_url + *_path; health_url, manifest_url, and mcp_url are derived at runtime from the verified base URL. No token, cookie, user identifier, or credential belongs in this contract."
+}
