@@ -1,6 +1,8 @@
 import { DISTRICTS, PROTOCOL_VERSION, TOOLS, assessRisk, capabilityMap, deploymentManifest, routeFrontDesk, validateArguments } from "./core.js";
+import { DISCIPLINE_TOOLS, buildDisciplineSnapshot, isDisciplineTool, validateDisciplineArguments } from "./discipline-observatory.js";
 
 const MCP_PATHS = new Set(["/mcp", "/mcp/"]);
+const ALL_TOOLS = [...TOOLS, ...DISCIPLINE_TOOLS];
 let schemaReady;
 
 export default {
@@ -11,7 +13,7 @@ export default {
       if (request.method === "OPTIONS") return respond(new Response(null, { status: 204 }), request, env, requestId);
       if (url.pathname === "/health") return respond(await health(env, requestId), request, env, requestId);
       if (url.pathname === "/.well-known/mcp.json" || url.pathname === "/api/manifest") return respond(json(deploymentManifest(env)), request, env, requestId);
-      if (url.pathname === "/api/tools" && request.method === "GET") return respond(json({ tools: TOOLS }), request, env, requestId);
+      if (url.pathname === "/api/tools" && request.method === "GET") return respond(json({ tools: ALL_TOOLS }), request, env, requestId);
       if (url.pathname === "/api/districts" && request.method === "GET") return respond(json({ count: DISTRICTS.length, districts: DISTRICTS.map(({ terms, ...d }) => d) }), request, env, requestId);
       if (url.pathname === "/api/route" && request.method === "POST") return respond(await routeApi(request, env, requestId), request, env, requestId);
       if (url.pathname === "/api/risk" && request.method === "POST") return respond(await riskApi(request, env, requestId), request, env, requestId);
@@ -49,13 +51,15 @@ async function mcp(request, env, requestId) {
     });
   }
   if (message.method === "ping") return rpcResult(message.id, {});
-  if (message.method === "tools/list") return rpcResult(message.id, { tools: TOOLS });
+  if (message.method === "tools/list") return rpcResult(message.id, { tools: ALL_TOOLS });
   if (message.method === "tools/call") {
     const name = message.params?.name;
     const args = message.params?.arguments || {};
-    const tool = TOOLS.find((item) => item.name === name);
+    const tool = ALL_TOOLS.find((item) => item.name === name);
     if (!tool) return rpcError(message.id, -32602, "Unknown tool");
-    const problem = validateArguments(tool, args);
+    const problem = isDisciplineTool(name)
+      ? validateDisciplineArguments(tool, args)
+      : validateArguments(tool, args);
     if (problem) return rpcError(message.id, -32602, problem);
     const identity = await actorIdentity(request, env);
     const result = await executeTool(name, args, env, requestId, identity);
@@ -75,6 +79,7 @@ async function executeTool(name, args, env, requestId, identity) {
   } else if (name === "assess_mcp_request_risk") output = { assessment: assessRisk(args) };
   else if (name === "get_agentropolis_capability_map") output = { capabilityMap: capabilityMap() };
   else if (name === "get_cloudflare_deployment_manifest") output = { deployment: deploymentManifest(env) };
+  else if (isDisciplineTool(name)) output = { discipline: buildDisciplineSnapshot(name, args, null) };
   else throw Object.assign(new Error("Unknown tool"), { status: 400, code: "UNKNOWN_TOOL" });
   const receipt = await writeReceipt(env, { requestId, toolName: name, actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: args, output, durationMs: Date.now() - started });
   return { output: { ...output, receipt }, receipt };
