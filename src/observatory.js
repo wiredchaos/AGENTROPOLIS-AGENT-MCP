@@ -190,12 +190,20 @@ function skillDevelopment(districts, runtime) {
 }
 
 function compactRuntime(runtime) {
-  if (!runtime) return { receiptCount: 0, avgDurationMs: 0, lastReceiptAt: null, toolCalls: [] };
+  if (!runtime) return {
+    receiptCount: 0, avgDurationMs: 0, lastReceiptAt: null, toolCalls: [],
+    observationWindow: { windowHours: 24, maxReceipts: 1000, truncated: false }
+  };
   return {
     receiptCount: Number(runtime.receiptCount || 0),
     avgDurationMs: Number(runtime.avgDurationMs || 0),
     lastReceiptAt: runtime.lastReceiptAt || null,
-    toolCalls: Array.isArray(runtime.toolCalls) ? runtime.toolCalls.slice(0, 12) : []
+    toolCalls: Array.isArray(runtime.toolCalls) ? runtime.toolCalls.slice(0, 12) : [],
+    observationWindow: runtime.observationWindow || {
+      windowHours: Number(runtime.windowHours || 24),
+      maxReceipts: Number(runtime.maxReceipts || 1000),
+      truncated: Boolean(runtime.truncated)
+    }
   };
 }
 

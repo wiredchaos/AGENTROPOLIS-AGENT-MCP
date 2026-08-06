@@ -49,3 +49,16 @@ test('maps tool names and rejects unexpected arguments', () => {
   assert.match(validateObservatoryArguments(tool, { view: 'unknown' }), /invalid observatory view/);
   assert.match(validateObservatoryArguments(tool, { view: 'all', execute: true }), /unexpected argument/);
 });
+
+test('exposes the bounded observation window and truncation flag in snapshots', () => {
+  const runtime = {
+    receiptCount: 3, avgDurationMs: 12, lastReceiptAt: '2026-08-06T00:00:00.000Z', toolCalls: [],
+    observationWindow: { windowHours: 24, maxReceipts: 2, truncated: true }
+  };
+  const snapshot = buildObservatorySnapshot('topology', DISTRICTS, runtime);
+  assert.equal(snapshot.data.runtime.observationWindow.windowHours, 24);
+  assert.equal(snapshot.data.runtime.observationWindow.maxReceipts, 2);
+  assert.equal(snapshot.data.runtime.observationWindow.truncated, true);
+  const empty = buildObservatorySnapshot('topology', DISTRICTS);
+  assert.equal(empty.data.runtime.observationWindow.truncated, false);
+});
