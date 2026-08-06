@@ -18,6 +18,26 @@ MCP client / browser
   -> response
 ```
 
+## HERMES launcher
+
+The repository includes a GitHub Pages installer surface in `github-pages/`.
+
+It:
+
+- checks the deployed Worker health and MCP manifest
+- generates native Streamable HTTP HERMES configuration
+- generates a Node-based command bridge fallback
+- avoids the fragile local Python `mcp` import path
+- preserves the read-only public authority ceiling
+
+After merging the launcher workflow and selecting **GitHub Actions** as the repository Pages source, the expected URL is:
+
+```text
+https://wiredchaos.github.io/AGENTROPOLIS-AGENT-MCP/
+```
+
+See [`docs/HERMES_REMOTE_MCP_INSTALL.md`](docs/HERMES_REMOTE_MCP_INSTALL.md).
+
 ## MCP tools
 
 - `route_front_desk`
