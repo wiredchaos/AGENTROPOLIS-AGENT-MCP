@@ -12,8 +12,14 @@ import {
   observatoryViewForTool,
   validateObservatoryArguments
 } from "./observatory.js";
+import {
+  DISCIPLINE_TOOLS,
+  buildDisciplineSnapshot,
+  isDisciplineTool,
+  validateDisciplineArguments
+} from "./discipline-observatory.js";
 
-const ALL_TOOLS = [...BASE_TOOLS, ...OBSERVATORY_TOOLS];
+const ALL_TOOLS = [...BASE_TOOLS, ...OBSERVATORY_TOOLS, ...DISCIPLINE_TOOLS];
 const MCP_PATHS = new Set(["/mcp", "/mcp/"]);
 const MANIFEST_TOOL = "get_cloudflare_deployment_manifest";
 const DEFAULT_OBSERVATION_WINDOW_HOURS = 24;
@@ -85,7 +91,9 @@ export default {
           const tool = ALL_TOOLS.find((item) => item.name === name);
           const problem = isObservatoryTool(name)
             ? validateObservatoryArguments(tool, args)
-            : validateArguments(tool, args);
+            : isDisciplineTool(name)
+              ? validateDisciplineArguments(tool, args)
+              : validateArguments(tool, args);
 
           if (problem) {
             return decorate(rpcError(message.id, -32602, problem), request, env, requestId);
@@ -146,6 +154,12 @@ export function buildExtendedManifest(env = {}) {
       views: OBSERVATORY_VIEWS,
       telemetry: "canonical baseline with bounded D1 receipt aggregates",
       authority: "READ_ONLY"
+    },
+    executionDiscipline: {
+      name: "HERMES Execution Discipline Observatory",
+      tools: DISCIPLINE_TOOLS.length,
+      telemetry: "canonical baseline until execution receipts and the thermodynamic measurement pipeline provide live data",
+      authority: "READ_ONLY"
     }
   };
 }
@@ -158,7 +172,7 @@ export function classifyMcpIntercept(message) {
   const method = message.method;
   const name = message.params?.name;
   const candidate = method === "tools/list"
-    || (method === "tools/call" && (isObservatoryTool(name) || name === MANIFEST_TOOL));
+    || (method === "tools/call" && (isObservatoryTool(name) || isDisciplineTool(name) || name === MANIFEST_TOOL));
 
   if (!candidate) return { kind: "delegate" };
   if (message.jsonrpc !== "2.0" || typeof method !== "string") return { kind: "invalid" };
@@ -185,6 +199,9 @@ async function executeExtendedTool(name, args, env, requestId, identity) {
 
   if (name === MANIFEST_TOOL) {
     rawOutput = { deployment: buildExtendedManifest(env) };
+  } else if (isDisciplineTool(name)) {
+    const runtime = await observatoryRuntime(env);
+    rawOutput = { discipline: buildDisciplineSnapshot(name, args, runtime) };
   } else {
     const view = observatoryViewForTool(name, args);
     if (!view) {

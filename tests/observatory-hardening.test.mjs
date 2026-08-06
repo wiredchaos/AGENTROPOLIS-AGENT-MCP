@@ -47,18 +47,22 @@ test('intercepts only valid Observatory and manifest MCP requests', () => {
   }), { kind: 'delegate' });
 });
 
-test('returns one consistent ten-tool manifest across discovery paths', () => {
+test('returns one consistent eighteen-tool manifest across discovery paths', () => {
   const manifest = buildExtendedManifest({
     SERVICE_VERSION: '1.0.0',
     ENVIRONMENT: 'test',
     MCP_AUTH_MODE: 'public-read'
   });
 
-  assert.equal(manifest.tools.length, 10);
+  assert.equal(manifest.tools.length, 18);
   assert.equal(manifest.endpoints.observatory, '/api/observatory');
   assert.equal(manifest.observatory.authority, 'READ_ONLY');
+  assert.equal(manifest.executionDiscipline.authority, 'READ_ONLY');
+  assert.equal(manifest.executionDiscipline.tools, 8);
   assert.ok(manifest.tools.some((tool) => tool.name === 'get_agentropolis_observatory_snapshot'));
   assert.ok(manifest.tools.some((tool) => tool.name === 'get_cloudflare_deployment_manifest'));
+  assert.ok(manifest.tools.some((tool) => tool.name === 'get_context_floor_status'));
+  assert.ok(manifest.tools.some((tool) => tool.name === 'validate_execution_receipt'));
 });
 
 test('bounds receipt aggregation and marks truncated samples', () => {
