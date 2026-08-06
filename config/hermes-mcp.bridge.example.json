@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "agentropolis-grid": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://agentropolis-agent-mcp.YOUR-SUBDOMAIN.workers.dev/mcp"
+      ]
+    }
+  }
+}
