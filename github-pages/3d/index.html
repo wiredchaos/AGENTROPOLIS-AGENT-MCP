@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Agentropolis 3D Intelligence Grid and HERMES MCP install surface.">
+  <meta name="description" content="Agentropolis 3D Intelligence Grid, HERMES MCP install surface, and governed Intelligence Observatory.">
   <meta name="theme-color" content="#020306">
   <title>Agentropolis 3D</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./observatory.css">
   <script src="./main.js" defer></script>
+  <script src="./observatory.js" defer></script>
 </head>
 <body>
   <div id="app" class="app">
@@ -28,6 +30,7 @@
         <span>Obsidian infrastructure. Red and cyan signal law. Every action leaves a receipt.</span>
         <div class="hero-actions">
           <button class="glass-button primary" data-open="hermes">Dock HERMES</button>
+          <button class="glass-button" data-open="observatory">Open Observatory</button>
           <button class="glass-button" id="focusButton">City focus</button>
         </div>
       </section>
@@ -54,6 +57,30 @@
         <button id="copyConfig" class="glass-button primary wide">Copy mcp.json block</button>
       </section>
 
+      <section id="observatoryPanel" class="glass drawer observatory-panel" aria-hidden="true">
+        <div class="drawer-head"><div><p>INTELLIGENCE OBSERVATORY</p><h2>See how the city grows, spends, remembers, and earns trust.</h2></div><button class="icon-button close" aria-label="Close Intelligence Observatory">×</button></div>
+        <div class="observatory-toolbar">
+          <div class="observatory-tabs" role="tablist" aria-label="Observatory views">
+            <button data-observatory-view="topology" class="active">Topology</button>
+            <button data-observatory-view="thermodynamics">Thermodynamics</button>
+            <button data-observatory-view="memory_evolution">Memory</button>
+            <button data-observatory-view="skill_development">Skills</button>
+          </div>
+          <select id="observatoryDistrict" aria-label="District filter"></select>
+          <button id="observatorySync">Sync through MCP</button>
+        </div>
+        <div id="observatoryStatus" class="readout">CANONICAL PREVIEW · NOT LIVE TELEMETRY</div>
+        <div class="observatory-grid">
+          <div class="observatory-stage"><canvas id="observatoryCanvas" aria-label="Agentropolis intelligence graph"></canvas></div>
+          <div class="observatory-side">
+            <div><p>METRICS</p><div id="observatoryMetrics" class="observatory-metrics"></div></div>
+            <div><p>OBSERVABILITY FEED</p><ul id="observatoryFeed" class="observatory-feed"></ul></div>
+            <details><summary>STRUCTURED MCP SNAPSHOT</summary><pre id="observatorySnapshot"></pre></details>
+          </div>
+        </div>
+        <p class="note">The preview is a canonical reference model. “Live” appears only when the Worker returns receipt-backed D1 aggregates. Hidden chain-of-thought and private model state are never exposed.</p>
+      </section>
+
       <section id="mediaPanel" class="glass drawer" aria-hidden="true">
         <div class="drawer-head"><div><p>HERO MEDIA DOCK</p><h2>Project video behind the city.</h2></div><button class="icon-button close" aria-label="Close hero media dock">×</button></div>
         <div class="upload-zone"><input id="heroUpload" type="file" accept="video/mp4,video/webm,video/ogg"><label for="heroUpload"><span class="upload-led"></span><strong>Upload video hero</strong><small>MP4 · WebM · Ogg · 200 MB local ceiling</small></label></div>
@@ -67,6 +94,7 @@
     <nav class="glass dock" aria-label="Agentropolis controls">
       <button data-open="city"><span>⌘</span>City</button>
       <button data-open="hermes"><span>◈</span>HERMES</button>
+      <button data-open="observatory"><span>◎</span>Observatory</button>
       <button data-open="media"><span>▣</span>Hero media</button>
     </nav>
 
