@@ -1,5 +1,6 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const root = new URL('../', import.meta.url);
 const required = [
@@ -80,7 +81,7 @@ async function walk(dir) {
     info.isDirectory() ? await walk(path) : files.push(path);
   }
 }
-await walk(new URL('.', root).pathname);
+await walk(fileURLToPath(root));
 const patterns = [
   /AKIA[0-9A-Z]{16}/,
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
@@ -91,7 +92,7 @@ const patterns = [
 for (const file of files) {
   if (file.includes('/.git/')) continue;
   const text = await readFile(file, 'utf8').catch(() => null);
-  if (text) for (const pattern of patterns) if (pattern.test(text)) throw new Error(`possible secret in ${relative(new URL('.', root).pathname, file)}`);
+  if (text) for (const pattern of patterns) if (pattern.test(text)) throw new Error(`possible secret in ${relative(fileURLToPath(root), file)}`);
 }
 for (const banned of ['wallet_sign', 'send_payment', 'publish_external', 'delete_resource', 'grant_permission']) {
   if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`)) throw new Error(`forbidden public tool ${banned}`);
