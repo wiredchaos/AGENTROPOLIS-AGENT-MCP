@@ -1,5 +1,65 @@
 'use strict';
 
+const basePreview = preview;
+preview = function derivedPreview(view) {
+  const snapshot = basePreview(view);
+  const data = snapshot.data || snapshot;
+
+  if (view === 'topology') {
+    const nodes = data.nodes || [];
+    const edges = data.edges || [];
+    data.summary = {
+      ...(data.summary || {}),
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+      districtCount: nodes.filter((node) => node.type === 'district').length,
+      connectedComponents: nodes.length ? 1 : 0,
+      averageDegree: nodes.length ? Number(((edges.length * 2) / nodes.length).toFixed(2)) : 0
+    };
+  } else if (view === 'thermodynamics') {
+    const rows = data.perDistrict || [];
+    data.summary = {
+      energyIn: averagePreview(rows, 'energyIn'),
+      valueOut: averagePreview(rows, 'valueOut'),
+      coordinationFriction: averagePreview(rows, 'friction'),
+      entropyRate: averagePreview(rows, 'entropyRate', 2),
+      drift: averagePreview(rows, 'drift'),
+      stabilityIndex: averagePreview(rows, 'stability')
+    };
+  } else if (view === 'memory_evolution') {
+    const layers = data.layers || [];
+    const clusters = data.clusters || [];
+    const totalMemories = layers.reduce((sum, layer) => sum + Number(layer.count || 0), 0);
+    data.summary = {
+      totalMemories,
+      averageConfidence: averagePreview(clusters, 'confidence', 2),
+      provenanceCoverage: averagePreview(clusters, 'provenanceCoverage'),
+      contradictions: clusters.reduce((sum, item) => sum + Number(item.contradictions || 0), 0),
+      archived: Math.round(totalMemories * 0.09)
+    };
+  } else if (view === 'skill_development') {
+    const rows = data.perDistrict || [];
+    data.summary = {
+      trackedCapabilities: rows.length * 14,
+      verifiedCapabilities: rows.reduce((sum, item) => sum + Math.round(Number(item.verifiedCompetence || 0) / 10), 0),
+      averageReadiness: averagePreview(rows, 'readiness'),
+      approvalState: 'human-governed',
+      selfPromotionAllowed: false
+    };
+  }
+
+  return snapshot;
+};
+
+function averagePreview(rows, key, precision = 0) {
+  if (!rows.length) return 0;
+  const total = rows.reduce((sum, row) => sum + Number(row[key] || 0), 0);
+  return Number((total / rows.length).toFixed(precision));
+}
+
+obsData = preview(obsView);
+updateObservatory('CANONICAL PREVIEW · NOT LIVE TELEMETRY');
+
 let observatoryRequestVersion = 0;
 let observatoryAbortController = null;
 
@@ -14,6 +74,8 @@ for (const button of obsTabs) {
   button.onclick = (event) => {
     cancelObservatorySync();
     previousHandler?.call(button, event);
+    obsData = preview(obsView);
+    updateObservatory('CANONICAL PREVIEW · CONNECT HERMES MCP FOR RECEIPT-BACKED DATA');
   };
 }
 
