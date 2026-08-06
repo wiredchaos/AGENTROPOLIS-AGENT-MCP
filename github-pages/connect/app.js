@@ -21,7 +21,7 @@ function normalizeBaseUrl(value) {
 }
 
 function renderConfig() {
-  const baseUrl = normalizeBaseUrl(baseUrlInput.value) || 'https://agentropolis-agent-mcp.YOUR-SUBDOMAIN.workers.dev';
+  const baseUrl = normalizeBaseUrl(baseUrlInput.value) || 'https://agentropolis-agent-mcp.chaoswired.workers.dev';
   const mcpUrl = `${baseUrl}/mcp`;
   const server = mode === 'native'
     ? {
