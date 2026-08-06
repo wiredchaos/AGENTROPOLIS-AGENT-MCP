@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agentropolis-grid": {
+      "url": "https://agentropolis-agent-mcp.YOUR-SUBDOMAIN.workers.dev/mcp",
+      "transport": "streamable-http"
+    }
+  }
+}
