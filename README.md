@@ -25,7 +25,7 @@ J-SPACE ∞ is the model-agnostic deliberation layer above the provenance-backed
 
 The public MCP does **not** expose hidden chain-of-thought or model activations. It exposes governed architecture manifests, source-backed Mind Vault contracts, WikiVault bridge rules, and bounded council assembly plans.
 
-The current branch deliberately marks the historical 200+ mind roster as **rehydration required** until the exact dataset is recovered with provenance.
+The source deliberately marks the historical 200+ mind roster as **rehydration required** until the exact dataset is recovered with provenance.
 
 See [`docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md`](docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md).
 
