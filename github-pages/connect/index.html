@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Configure the Agentropolis remote MCP capability membrane for HERMES.">
+  <meta name="theme-color" content="#06090d">
+  <title>Agentropolis — Connect HERMES</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="grid" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand"><a href="../" style="color:inherit;text-decoration:none"><span class="signal"></span>AGENTROPOLIS MCP</a></div>
+    <div class="status"><a href="../3d/" style="color:inherit;text-decoration:none">3D CITY ↗</a> · <a href="../" style="color:inherit;text-decoration:none">LANDING ↗</a></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">REMOTE MCP · STREAMABLE HTTP · READ ONLY</p>
+      <h1>Connect HERMES to the Intelligence Grid.</h1>
+      <p class="lead">This page generates a safe HERMES configuration for the deployed Cloudflare Worker. It does not execute tools, hold credentials, or grant authority.</p>
+    </section>
+
+    <section class="panel">
+      <div>
+        <p class="eyebrow">01 · RUNTIME</p>
+        <h2>Enter the deployed Worker URL</h2>
+      </div>
+      <label for="baseUrl">Worker base URL</label>
+      <div class="input-row">
+        <input id="baseUrl" type="url" value="https://agentropolis-agent-mcp.chaoswired.workers.dev" autocomplete="off" spellcheck="false">
+        <button id="checkButton" class="button" type="button">Check runtime</button>
+      </div>
+      <div id="healthResult" class="health neutral" role="status">Waiting for a Worker URL.</div>
+    </section>
+
+    <section class="panel">
+      <div>
+        <p class="eyebrow">02 · HERMES</p>
+        <h2>Choose the connection lane</h2>
+      </div>
+      <div class="tabs" role="tablist">
+        <button id="nativeTab" class="tab active" type="button" data-mode="native">Native remote HTTP</button>
+        <button id="bridgeTab" class="tab" type="button" data-mode="bridge">Node bridge fallback</button>
+      </div>
+      <p id="modeDescription" class="muted">Use this when your HERMES build accepts remote MCP servers with a URL and Streamable HTTP transport.</p>
+      <pre id="configOutput" tabindex="0"></pre>
+      <div class="actions">
+        <button id="copyButton" class="button primary" type="button">Copy mcp.json block</button>
+        <a class="button" href="https://github.com/wiredchaos/AGENTROPOLIS-AGENT-MCP" rel="noreferrer">Open repository</a>
+      </div>
+    </section>
+
+    <section class="panel steps">
+      <div>
+        <p class="eyebrow">03 · INSTALL</p>
+        <h2>Finish inside HERMES</h2>
+      </div>
+      <ol>
+        <li>Deploy the repository to Cloudflare Workers and copy the public Worker URL.</li>
+        <li>Paste that URL above and verify <code>/health</code> and <code>/.well-known/mcp.json</code>.</li>
+        <li>Copy the generated server block into HERMES <code>mcp.json</code>.</li>
+        <li>Save, restart the MCP server, and confirm the five read-only tools appear.</li>
+        <li>Call <code>list_agentropolis_districts</code> before enabling any deeper execution corridor.</li>
+      </ol>
+      <div class="warning"><strong>Do not use the broken Python bridge shown in the screenshot.</strong> It fails because that interpreter cannot import the <code>mcp</code> package. Native HTTP is preferred; the Node bridge is the compatibility fallback.</div>
+    </section>
+
+    <section class="panel contract">
+      <div>
+        <p class="eyebrow">AUTHORITY CONTRACT</p>
+        <h2>Discovery is not permission.</h2>
+      </div>
+      <div class="contract-grid">
+        <article><strong>READ</strong><span>Route, inspect, list, map, assess</span></article>
+        <article><strong>DENY</strong><span>Sign, pay, publish, delete, mutate</span></article>
+        <article><strong>RECEIPT</strong><span>Every successful call produces evidence</span></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>Identity → Mandate → Plan → Execute → Receipt → Audit</footer>
+</body>
+</html>

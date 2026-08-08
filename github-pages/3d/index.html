@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Agentropolis 3D Intelligence Grid, HERMES MCP install surface, and governed Intelligence Observatory.">
+  <meta name="theme-color" content="#020306">
+  <title>Agentropolis 3D</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./observatory.css">
+  <script src="./main.js" defer></script>
+  <script src="./observatory.js" defer></script>
+  <script src="./observatory-race-guard.js" defer></script>
+</head>
+<body>
+  <div id="app" class="app">
+    <video id="heroVideo" class="hero-video" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+    <canvas id="cityCanvas" aria-label="Interactive 3D model of Agentropolis"></canvas>
+    <div class="world-shade" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="glass topbar">
+      <div class="brand"><span class="led led-cyan"></span><strong>AGENTROPOLIS</strong><small>THE INTELLIGENCE GRID</small></div>
+      <div class="top-status"><span id="runtimeDot" class="led"></span><span id="runtimeLabel">IDLE</span><b>HERMES MCP</b></div>
+    </header>
+
+    <main>
+      <section class="hero-copy" aria-labelledby="heroTitle">
+        <p>3D CITY · GOVERNED MCP · HUMAN MISSION CONTROL</p>
+        <h1 id="heroTitle">Enter the<br><em>Intelligence Grid.</em></h1>
+        <span>Obsidian infrastructure. Red and cyan signal law. Every action leaves a receipt.</span>
+        <div class="hero-actions">
+          <button class="glass-button primary" data-open="hermes">Dock HERMES</button>
+          <button class="glass-button" data-open="observatory">Open Observatory</button>
+          <button class="glass-button" id="focusButton">City focus</button>
+        </div>
+      </section>
+
+      <aside id="structureCard" class="glass structure-card" aria-live="polite">
+        <p>SELECTED STRUCTURE</p>
+        <h2 id="selectedName">GRID CORE</h2>
+        <span id="selectedRole">Runtime, memory, dispatch, and registry substrate.</span>
+        <b id="selectedStatus">ONLINE</b>
+      </aside>
+
+      <section id="cityPanel" class="glass drawer" aria-hidden="true">
+        <div class="drawer-head"><div><p>CITY DIRECTORY</p><h2>Districts are institutions.</h2></div><button class="icon-button close" aria-label="Close city directory">×</button></div>
+        <div id="directory" class="directory"></div>
+      </section>
+
+      <section id="hermesPanel" class="glass drawer" aria-hidden="true">
+        <div class="drawer-head"><div><p>HERMES INSTALL TERMINAL</p><h2>Dock through the governed lane.</h2></div><button class="icon-button close" aria-label="Close HERMES terminal">×</button></div>
+        <label for="baseUrl">Cloudflare Worker URL</label>
+        <div class="input-row"><input id="baseUrl" type="url" value="https://agentropolis-agent-mcp.chaoswired.workers.dev" autocomplete="off" spellcheck="false"><button id="checkRuntime" class="glass-button primary">Check</button></div>
+        <div id="healthReadout" class="readout">Waiting for a Worker URL.</div>
+        <div class="segmented"><button class="active" data-mode="native">Native HTTP</button><button data-mode="bridge">Node bridge</button></div>
+        <pre id="configOutput" tabindex="0"></pre>
+        <button id="copyConfig" class="glass-button primary wide">Copy mcp.json block</button>
+      </section>
+
+      <section id="observatoryPanel" class="glass drawer observatory-panel" aria-hidden="true">
+        <div class="drawer-head"><div><p>INTELLIGENCE OBSERVATORY</p><h2>See how the city grows, spends, remembers, and earns trust.</h2></div><button class="icon-button close" aria-label="Close Intelligence Observatory">×</button></div>
+        <div class="observatory-toolbar">
+          <div class="observatory-tabs" role="tablist" aria-label="Observatory views">
+            <button data-observatory-view="topology" class="active">Topology</button>
+            <button data-observatory-view="thermodynamics">Thermodynamics</button>
+            <button data-observatory-view="memory_evolution">Memory</button>
+            <button data-observatory-view="skill_development">Skills</button>
+          </div>
+          <select id="observatoryDistrict" aria-label="District filter"></select>
+          <button id="observatorySync">Sync through MCP</button>
+        </div>
+        <div id="observatoryStatus" class="readout">CANONICAL PREVIEW · NOT LIVE TELEMETRY</div>
+        <div class="observatory-grid">
+          <div class="observatory-stage"><canvas id="observatoryCanvas" aria-label="Agentropolis intelligence graph"></canvas></div>
+          <div class="observatory-side">
+            <div><p>METRICS</p><div id="observatoryMetrics" class="observatory-metrics"></div></div>
+            <div><p>OBSERVABILITY FEED</p><ul id="observatoryFeed" class="observatory-feed"></ul></div>
+            <details><summary>STRUCTURED MCP SNAPSHOT</summary><pre id="observatorySnapshot"></pre></details>
+          </div>
+        </div>
+        <p class="note">The preview is a canonical reference model. “Live” appears only when the Worker returns receipt-backed D1 aggregates. Hidden chain-of-thought and private model state are never exposed.</p>
+      </section>
+
+      <section id="mediaPanel" class="glass drawer" aria-hidden="true">
+        <div class="drawer-head"><div><p>HERO MEDIA DOCK</p><h2>Project video behind the city.</h2></div><button class="icon-button close" aria-label="Close hero media dock">×</button></div>
+        <div class="upload-zone"><input id="heroUpload" type="file" accept="video/mp4,video/webm,video/ogg"><label for="heroUpload"><span class="upload-led"></span><strong>Upload video hero</strong><small>MP4 · WebM · Ogg · 200 MB local ceiling</small></label></div>
+        <div id="mediaReadout" class="readout">No operator video loaded.</div>
+        <div id="mediaMeta" class="media-meta" hidden></div>
+        <div class="row-actions"><button id="clearHero" class="glass-button" disabled>Clear local hero</button><a class="glass-button" href="../assets/" target="_blank" rel="noreferrer">Public asset path</a></div>
+        <p class="note">Local uploads persist in this browser through IndexedDB. A shared public hero requires a deployed asset or governed R2 upload corridor.</p>
+      </section>
+    </main>
+
+    <nav class="glass dock" aria-label="Agentropolis controls">
+      <button data-open="city"><span>⌘</span>City</button>
+      <button data-open="hermes"><span>◈</span>HERMES</button>
+      <button data-open="observatory"><span>◎</span>Observatory</button>
+      <button data-open="media"><span>▣</span>Hero media</button>
+    </nav>
+
+    <div class="city-help glass">Drag to orbit · wheel to zoom · click a structure</div>
+    <footer>Identity → Mandate → Plan → Execute → Receipt → Audit</footer>
+  </div>
+</body>
+</html>
