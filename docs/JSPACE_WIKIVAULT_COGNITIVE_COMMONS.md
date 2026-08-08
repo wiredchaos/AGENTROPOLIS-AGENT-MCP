@@ -1,6 +1,6 @@
 # J-SPACE ∞ — WikiVault Cognitive Commons
 
-**Status:** Feature branch implementation
+**Status:** Source implementation complete; runtime deployment requires independent verification
 **Layer:** Agentropolis Layer 1 / Intelligence Grid infrastructure
 **Authority:** READ_ONLY public MCP surface
 
@@ -215,7 +215,7 @@ Meta-J audits the assembly rather than adding another ordinary opinion. It check
 
 ## MCP tools
 
-The feature branch adds four public read-only tools:
+The source adds four public read-only tools:
 
 - `get_jspace_manifest`
 - `get_wikivault_jspace_bridge`
@@ -252,10 +252,10 @@ Council assembly is MCP-only because it accepts a bounded problem statement and 
 | Obsidian node-vault doctrine | present; deployment must be verified per node |
 | llm-wiki doctrine | present; index deployment must be verified per node |
 | gbrain ontology doctrine | present; graph deployment must be verified per node |
-| 200+ Mind Vault schema | implemented |
+| 200+ Mind Vault schema | implemented in source |
 | exact historical 200-mind roster | rehydration required |
-| J-SPACE MCP tool definitions | implemented on feature branch |
-| council assembly planner | implemented on feature branch |
+| J-SPACE MCP tool definitions | implemented in source; deployment unverified |
+| council assembly planner | implemented in source; deployment unverified |
 | live Mind Vault resolution | next implementation stage |
 | outcome-weighted routing | next implementation stage |
 
