@@ -2,7 +2,7 @@
 
 The governed remote MCP capability membrane for the **Agentropolis Intelligence Grid**.
 
-This repository deploys as one Cloudflare Worker serving a cyber-noir command surface, a stateless Streamable HTTP MCP endpoint, ten public read-only tools, D1 execution receipts, security events, rate limiting, operator-only receipt APIs, and the Agentropolis 3D Intelligence Observatory.
+This repository deploys as one Cloudflare Worker serving a cyber-noir command surface, a stateless Streamable HTTP MCP endpoint, fourteen public read-only tools, D1 execution receipts, security events, rate limiting, operator-only receipt APIs, the Agentropolis 3D Intelligence Observatory, and the J-SPACE ∞ Cognitive Commons.
 
 > Infrastructure becomes the terrain others must build on.
 
@@ -14,10 +14,20 @@ HERMES / MCP client / Agentropolis 3D
   -> authentication + rate limit
   -> MCP capability membrane
   -> bounded READ_ONLY tool
+  -> WikiVault / J-SPACE / Observatory derived view
   -> D1 receipt
   -> structured response
-  -> topology / thermodynamics / memory / skill visualization
 ```
+
+## J-SPACE ∞ Cognitive Commons
+
+J-SPACE ∞ is the model-agnostic deliberation layer above the provenance-backed knowledge substrate. It composes WikiVault, Obsidian, llm-wiki, gbrain, the versioned Mind Vault, specialist lenses, an attention market, cognitive assemblies, a Heretic slot, and Meta-J auditing.
+
+The public MCP does **not** expose hidden chain-of-thought or model activations. It exposes governed architecture manifests, source-backed Mind Vault contracts, WikiVault bridge rules, and bounded council assembly plans.
+
+The source deliberately marks the historical 200+ mind roster as **rehydration required** until the exact dataset is recovered with provenance.
+
+See [`docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md`](docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md).
 
 ## Agentropolis 3D + Intelligence Observatory
 
@@ -73,6 +83,13 @@ See [`docs/HERMES_REMOTE_MCP_INSTALL.md`](docs/HERMES_REMOTE_MCP_INSTALL.md).
 - `get_agentropolis_capability_map`
 - `get_cloudflare_deployment_manifest`
 
+### J-SPACE ∞ Cognitive Commons
+
+- `get_jspace_manifest`
+- `get_wikivault_jspace_bridge`
+- `assemble_cognitive_council`
+- `get_mind_vault_contract`
+
 ### Intelligence Observatory
 
 - `get_agentropolis_topology`
@@ -81,7 +98,7 @@ See [`docs/HERMES_REMOTE_MCP_INSTALL.md`](docs/HERMES_REMOTE_MCP_INSTALL.md).
 - `get_agentropolis_skill_development`
 - `get_agentropolis_observatory_snapshot`
 
-All ten public tools are read-only. No wallet signing, payment, publishing, permission mutation, settlement, destructive action, or autonomous self-promotion is registered.
+All fourteen public tools are read-only. No wallet signing, payment, publishing, permission mutation, settlement, destructive action, autonomous canon mutation, or autonomous self-promotion is registered.
 
 ## Endpoints
 
@@ -93,10 +110,19 @@ POST /mcp                      Streamable HTTP MCP
 GET  /api/tools                complete public tool registry
 GET  /api/districts            district registry
 GET  /api/observatory          governed observatory snapshot
+GET  /api/jspace               governed J-SPACE static views
 POST /api/route                Front Desk routing
 POST /api/risk                 risk assessment
 GET  /api/receipts             operator-only receipts
 GET  /api/receipts/:id         operator-only receipt
+```
+
+J-SPACE examples:
+
+```text
+GET /api/jspace?view=manifest
+GET /api/jspace?view=wikivault
+GET /api/jspace?view=mind-vault
 ```
 
 Observatory examples:
@@ -140,9 +166,13 @@ Operator receipt APIs always require this encrypted Worker secret. Set `MCP_AUTH
 
 - Authority is a runtime constraint, not a prompt.
 - Public tools remain read-only.
+- WikiVault evidence/canon separation is preserved across J-SPACE deliberation.
+- Obsidian notes and llm-wiki retrieval do not automatically become verified canon.
+- Mind Vault profiles are source-backed reasoning lenses, not identity impersonations.
 - Raw request bodies and bearer tokens are not stored in receipts.
 - Every successful tool call returns a receipt ID and persistence status.
 - Browser-originated cross-site requests must pass the origin allowlist.
 - High-impact actions require a separate authenticated execution corridor.
 - Canonical preview data is never presented as live telemetry.
+- Hidden chain-of-thought and private model activations are never exposed.
 - Agent progression remains human governed; self-promotion is disabled.
