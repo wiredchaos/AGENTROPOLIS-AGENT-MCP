@@ -98,7 +98,7 @@ export function jspaceManifest() {
       llmWikiIndex: "DOCTRINE_PRESENT_VERIFY_PER_NODE",
       gbrainOntology: "DOCTRINE_PRESENT_VERIFY_PER_NODE",
       mindVault200PlusRoster: "ROSTER_REHYDRATION_REQUIRED",
-      jspaceMcpSurface: "IMPLEMENTED_ON_FEATURE_BRANCH"
+      jspaceMcpSurface: "IMPLEMENTED_IN_SOURCE_DEPLOYMENT_UNVERIFIED"
     }
   };
 }
