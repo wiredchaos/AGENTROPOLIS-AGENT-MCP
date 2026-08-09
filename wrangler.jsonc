@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "agentropolis-agent-mcp",
-  "main": "src/jspace-index.js",
+  "main": "src/cloudflare-computer-index.js",
   "compatibility_date": "2026-07-31",
   "workers_dev": true,
   "preview_urls": true,
@@ -15,9 +15,10 @@
   "d1_databases": [{ "binding": "DB", "database_name": "agentropolis-agent-mcp", "database_id": "f21afe5f-2c13-4f6b-b7df-c5e1ae85f449" }],
   "vars": {
     "ENVIRONMENT": "production",
-    "SERVICE_VERSION": "1.1.0-jspace",
+    "SERVICE_VERSION": "1.2.0-cloudflare-computer-quarantine",
     "MCP_AUTH_MODE": "public-read",
     "PUBLIC_MCP_ENABLED": "true",
+    "CLOUDFLARE_COMPUTER_EXECUTION_ENABLED": "false",
     "ALLOWED_ORIGINS": "https://playground.ai.cloudflare.com,https://wiredchaos.github.io,https://agentropolis.gitlawb.app,http://localhost:5173,http://127.0.0.1:5173",
     "RATE_LIMIT_WINDOW_SECONDS": "60",
     "RATE_LIMIT_MAX_REQUESTS": "120",
