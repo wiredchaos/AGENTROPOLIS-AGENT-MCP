@@ -1,5 +1,5 @@
 schema_version: 1.0.0
-repo_id: agent-mcp
+repo_id: agentropolis-agent-mcp
 display_name: Agentropolis Agent MCP
 system_role: governed-capability-membrane
 district: null
@@ -23,7 +23,7 @@ hermes:
   allowed_actions: [inspect, create-branch, run-validation, open-pull-request, prepare-staging]
   forbidden_actions: [direct-main-push, self-approve, unscoped-tool-execution, deploy-production-without-approval, expose-secrets]
 commands:
-  install: npm install
+  install: npm ci
   lint: null
   test: npm test
   typecheck: null
