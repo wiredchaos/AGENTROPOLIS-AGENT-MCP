@@ -22,6 +22,8 @@ export function assertPiExecutionPreconditions({ config, mode, context }) {
   if (!context?.credentialHandleResolved) throw new Error("Pi runtime credential handle is not resolved.");
   if (!context?.effectiveCapabilitiesAttested) throw new Error("Pi runtime effective capabilities are not attested.");
   if (!context?.receiptDestinationConfigured) throw new Error("Pi runtime receipt destination is not configured.");
+  if (context?.sdkExactVersionAttested !== true) throw new Error("Pi runtime exact SDK version is not attested.");
+  if (context?.resourceDiscoveryIsolated !== true) throw new Error("Pi runtime resource discovery is not isolated and attested.");
   if (mode.sandboxRequired && !context?.sandboxVerified) throw new Error("Pi EXECUTE mode requires a verified sandbox.");
   if (mode.mutationsAllowed && mode.approvalRequired && !context?.mutationApproved) {
     throw new Error("Pi mutation mode requires explicit policy or operator approval.");
@@ -63,12 +65,15 @@ export async function createGovernedPiSession(options) {
     session,
     receiptEnvelope: {
       adapterId: config.adapterId,
+      sdkPackage: config.sdk?.package || null,
+      sdkVersion: config.sdk?.version || null,
       mode: mode.name,
       provider: options.provider,
       modelId: options.modelId,
       workspaceRoot: cwd,
       tools: [...mode.tools],
       sandboxVerified: Boolean(options.context.sandboxVerified),
+      resourceDiscoveryIsolated: Boolean(options.context.resourceDiscoveryIsolated),
       authority: mode.mutationsAllowed ? "BOUNDED_MUTATION" : "READ_ONLY"
     }
   };
