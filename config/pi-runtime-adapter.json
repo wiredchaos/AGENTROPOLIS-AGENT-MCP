@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterId": "pi-runtime",
+  "displayName": "Pi Coding Agent Runtime",
+  "status": "DISABLED_BY_DEFAULT",
+  "runtimeRole": "DEVELOPER_EXECUTION_ADAPTER",
+  "executionBoundary": "LOCAL_OR_SANDBOXED_WORKER_ONLY",
+  "cloudflareWorkerExecutionAllowed": false,
+  "networkBoundary": "POLICY_CONTROLLED",
+  "authenticationAssumption": "BYOK_VIA_CREDENTIAL_HANDLE",
+  "parallelMutationsAllowed": false,
+  "receiptRequired": true,
+  "defaultMode": "ADVISORY",
+  "modes": {
+    "ADVISORY": {
+      "tools": ["read", "grep", "find", "ls"],
+      "mutationsAllowed": false,
+      "approvalRequired": false
+    },
+    "DRAFT": {
+      "tools": ["read", "grep", "find", "ls", "edit"],
+      "mutationsAllowed": true,
+      "approvalRequired": true
+    },
+    "EXECUTE": {
+      "tools": ["read", "grep", "find", "ls", "edit", "write", "bash"],
+      "mutationsAllowed": true,
+      "approvalRequired": true,
+      "sandboxRequired": true
+    }
+  },
+  "capabilityMap": {
+    "agentropolis.dev.read": ["read", "grep", "find", "ls"],
+    "agentropolis.dev.edit": ["edit"],
+    "agentropolis.dev.write": ["write"],
+    "agentropolis.dev.shell": ["bash"]
+  },
+  "activationRequirements": [
+    "approved_worker",
+    "pi_sdk_available",
+    "workspace_identity_verified",
+    "credential_handle_resolved",
+    "effective_capabilities_attested",
+    "egress_policy_loaded",
+    "receipt_destination_configured",
+    "operator_or_policy_approval_for_mutation"
+  ],
+  "killConditions": [
+    "raw_secret_requested",
+    "workspace_identity_mismatch",
+    "capability_escalation_detected",
+    "sandbox_required_but_missing",
+    "egress_policy_violation",
+    "receipt_generation_failed",
+    "authority_revoked"
+  ],
+  "canonicalContract": "docs/PI_RUNTIME_ADAPTER.md"
+}
