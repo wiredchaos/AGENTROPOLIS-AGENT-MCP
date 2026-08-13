@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "population_policy": "SOURCE_UNION_UNCAPPED",
+  "identity_namespace": "people/<slug>",
+  "authority": "REFERENCE_MEMBERSHIP_ONLY",
+  "sources": [
+    {
+      "id": "historical-reference-corpus",
+      "origin_url": "https://hmolpedia.com/page/Top_2000_minds_%28full_list%29",
+      "reference_url": "https://hmolpedia.com/page/Top_2000_minds_%28reference_lists%29",
+      "source_type": "reference_list",
+      "ingest_fields": ["identity_name", "source_url"],
+      "trust_policy": "REFERENCE_MEMBERSHIP_NOT_CANONICAL_TRUTH"
+    },
+    {
+      "id": "great-thinkers-reference-corpus",
+      "origin_url": "https://www.edinformatics.com/great_thinkers/",
+      "source_type": "reference_list",
+      "ingest_fields": ["identity_name", "source_url"],
+      "trust_policy": "REFERENCE_MEMBERSHIP_NOT_CANONICAL_TRUTH"
+    }
+  ],
+  "governance": {
+    "dedupe": "stable identity normalization; ambiguous merges go to review",
+    "cognitive_dna": "not populated from list membership alone",
+    "routing": "documented work, disciplines, reasoning methods, disagreement value, evidence fit, and provenance",
+    "persisted_source_profile_fields": "NONE",
+    "execution_authority": "NONE",
+    "canon_promotion": "REVIEW_REQUIRED",
+    "future_sources": "approved reference lists may be appended without a population ceiling"
+  }
+}
