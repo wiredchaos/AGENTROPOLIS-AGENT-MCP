@@ -7,7 +7,7 @@ export const JSPACE_LAYERS = Object.freeze({
   retrieval: ["llm-wiki index", "RAG chunks", "archive/review/security retrieval scopes"],
   ontology: ["gbrain entities", "relationships", "claims", "confidence", "evidence links"],
   cognition: ["Mind Vault", "lens router", "attention market", "cognitive assembly", "collision engine", "Heretic slot", "Meta-J"],
-  governance: ["ASBE/AEGIS policy gate", "authority profile", "human approval", "execution receipts"]
+  governance: ["AEGIS / 54-T / Policy-Risk gate", "ASBE for Agentic Studios workloads only", "authority profile", "human approval", "execution receipts"]
 });
 
 export const JSPACE_INVARIANTS = Object.freeze([
@@ -15,9 +15,11 @@ export const JSPACE_INVARIANTS = Object.freeze([
   "Obsidian is human-editable memory, not automatic proof of deployment or truth.",
   "gbrain claims must retain provenance, confidence, holder identity, and evidence state.",
   "Mind profiles are source-backed reasoning lenses, not simulated identities or claims of consciousness.",
+  "Reference-list membership, page order, rank, fame, or intelligence estimates do not grant routing or execution authority.",
   "The router may select minds and lenses but cannot increase execution authority.",
   "The Heretic slot is reserved for the strongest relevant counter-position when available.",
   "Meta-J audits selection bias, missing evidence, consensus collapse, uncertainty, and unresolved conflicts.",
+  "General governance routes through AEGIS / 54-T / Policy-Risk; ASBE applies only when the workload belongs to Agentic Studios.",
   "No raw secrets, hidden chain-of-thought, private model activations, or credentials are exposed.",
   "All public MCP operations remain READ_ONLY and receipt-backed."
 ]);
@@ -57,7 +59,7 @@ export const JSPACE_TOOLS = [
   {
     name: "get_mind_vault_contract",
     title: "Get Mind Vault Contract",
-    description: "Return the source-backed schema and governance contract for the 200-plus-mind reasoning vault.",
+    description: "Return the source-backed schema and governance contract for the uncapped Mind Vault source union.",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: { type: "object", additionalProperties: false, properties: {} }
   }
@@ -84,7 +86,8 @@ export function jspaceManifest() {
       "collision + Heretic",
       "Meta-J audit",
       "synthesis",
-      "ASBE/AEGIS gate",
+      "AEGIS / 54-T / Policy-Risk gate",
+      "ASBE when Agentic Studios governance applies",
       "human approval when required",
       "execution corridor",
       "receipt",
@@ -97,7 +100,10 @@ export function jspaceManifest() {
       obsidianNodeVault: "DOCTRINE_PRESENT_VERIFY_PER_NODE",
       llmWikiIndex: "DOCTRINE_PRESENT_VERIFY_PER_NODE",
       gbrainOntology: "DOCTRINE_PRESENT_VERIFY_PER_NODE",
-      mindVault200PlusRoster: "ROSTER_REHYDRATION_REQUIRED",
+      mindVault200PlusRoster: "SUPERSEDED_BY_SOURCE_UNION",
+      mindVaultPopulationPolicy: "SOURCE_UNION_UNCAPPED",
+      mindVaultSourceRegistry: "HMOLPEDIA_PLUS_EDINFORMATICS_CONFIGURED",
+      mindVaultSourceIngest: "INGESTER_IMPLEMENTED_DATA_REFRESH_REVIEW_REQUIRED",
       jspaceMcpSurface: "IMPLEMENTED_IN_SOURCE_DEPLOYMENT_UNVERIFIED"
     }
   };
@@ -122,9 +128,21 @@ export function wikivaultJspaceBridge() {
 export function mindVaultContract() {
   return {
     namespace: "people/<slug>",
-    scaleTarget: "200+ source-backed minds; exact roster is a separately versioned dataset",
+    populationPolicy: "SOURCE_UNION_UNCAPPED",
+    scaleTarget: "No fixed ceiling; ingest approved source populations and append new source-backed identities.",
+    sourceRegistry: "mind-vault/sources/manifest.json",
+    initialProfileState: "UNENRICHED",
+    sourceMembershipDoesNotImplyAuthority: true,
     purpose: "Store attributable reasoning methods and documented intellectual positions for selective use as cognitive lenses.",
-    prohibited: ["identity impersonation", "fabricated quotations", "invented beliefs", "automatic authority from fame", "treating inference as documented fact"],
+    prohibited: [
+      "identity impersonation",
+      "fabricated quotations",
+      "invented beliefs",
+      "automatic authority from fame",
+      "routing authority from reference-list rank or intelligence estimates",
+      "treating source membership as Cognitive DNA",
+      "treating inference as documented fact"
+    ],
     requiredFields: [
       "identity",
       "era",
@@ -149,7 +167,9 @@ export function mindVaultContract() {
       "evidence_state"
     ],
     claimKinds: ["fact", "take", "doctrine", "decision", "bet", "hunch", "relationship", "evidence", "confidence"],
-    routingPrinciple: "Select the smallest diverse council that maximizes domain fit, evidence fit, contradiction value, novelty, and historical task performance under the context budget."
+    sourceMembershipFields: ["identity", "aliases", "source_id", "source_url", "source_position", "observed_at", "content_hash", "evidence_state"],
+    enrichmentRule: "Reference-list membership creates an identity seed only. Cognitive DNA requires separate evidence from primary or high-quality secondary sources.",
+    routingPrinciple: "Select the smallest diverse council that maximizes domain fit, evidence fit, contradiction value, novelty, historical task performance, confidence, and context efficiency under the context budget."
   };
 }
 
@@ -191,7 +211,7 @@ export function assembleCognitiveCouncil({ problem, domains = [], councilSize = 
     slots,
     attentionMarket: {
       scoreDimensions: ["domain_fit", "evidence_fit", "contradiction_value", "novelty", "historical_task_performance", "confidence", "context_cost"],
-      rule: "Fame or popularity alone cannot increase selection score."
+      rule: "Reference-list position, intelligence estimates, fame, or popularity alone cannot increase selection score."
     },
     metaJAudit: ["selection bias", "lineage redundancy", "missing evidence", "unresolved conflicts", "confidence inflation", "consensus collapse", "falsifiers", "authority creep"],
     nextStep: "Resolve slots against the versioned Mind Vault, WikiVault evidence, gbrain relationships, specialist agents, and live sources permitted by policy; then synthesize with citations and confidence."
