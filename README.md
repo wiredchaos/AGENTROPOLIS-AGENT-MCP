@@ -25,9 +25,9 @@ J-SPACE ∞ is the model-agnostic deliberation layer above the provenance-backed
 
 The public MCP does **not** expose hidden chain-of-thought or model activations. It exposes governed architecture manifests, source-backed Mind Vault contracts, WikiVault bridge rules, and bounded council assembly plans.
 
-The source deliberately marks the historical 200+ mind roster as **rehydration required** until the exact dataset is recovered with provenance.
+The Mind Vault population is now **source-union and uncapped**. Approved reference lists seed neutral `people/<slug>` identities with source provenance; list membership alone does not create Cognitive DNA, canon authority, or execution rights. The initial source registry includes Hmolpedia's historical reference corpus and EDinformatics' Great Thinkers list.
 
-See [`docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md`](docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md).
+See [`docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md`](docs/JSPACE_WIKIVAULT_COGNITIVE_COMMONS.md) and [`docs/MIND_VAULT_SOURCE_UNION.md`](docs/MIND_VAULT_SOURCE_UNION.md).
 
 ## Agentropolis 3D + Intelligence Observatory
 
@@ -135,6 +135,14 @@ GET /api/observatory?view=memory_evolution
 GET /api/observatory?view=skill_development
 ```
 
+## Mind Vault source ingest
+
+```bash
+node scripts/ingest-mind-vault.mjs
+```
+
+The ingester attempts approved source URLs, normalizes source membership into stable identities, writes reviewable JSONL under `mind-vault/data/`, and refuses to report a complete run when source coverage is below configured thresholds. Generated membership records remain evidence artifacts until reviewed; deeper Cognitive DNA enrichment requires separate evidence.
+
 ## Validate
 
 ```bash
@@ -169,6 +177,8 @@ Operator receipt APIs always require this encrypted Worker secret. Set `MCP_AUTH
 - WikiVault evidence/canon separation is preserved across J-SPACE deliberation.
 - Obsidian notes and llm-wiki retrieval do not automatically become verified canon.
 - Mind Vault profiles are source-backed reasoning lenses, not identity impersonations.
+- Reference-list membership does not automatically become canon or routing authority.
+- General J-SPACE governance uses AEGIS / 54-T / Policy-Risk; ASBE is reserved for Agentic Studios workloads.
 - Raw request bodies and bearer tokens are not stored in receipts.
 - Every successful tool call returns a receipt ID and persistence status.
 - Browser-originated cross-site requests must pass the origin allowlist.
