@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "population_policy": "SOURCE_UNION_UNCAPPED",
+  "identity_namespace": "people/<slug>",
+  "authority": "REFERENCE_MEMBERSHIP_ONLY",
+  "sources": [
+    {
+      "id": "hmolpedia-reference-corpus",
+      "title": "Hmolpedia historical minds reference corpus",
+      "origin_url": "https://hmolpedia.com/page/Top_2000_minds_%28full_list%29",
+      "reference_url": "https://hmolpedia.com/page/Top_2000_minds_%28reference_lists%29",
+      "source_type": "reference_list",
+      "ingest_fields": ["identity_name", "source_position", "source_url"],
+      "trust_policy": "ATTRIBUTED_REFERENCE_NOT_CANONICAL_TRUTH",
+      "notes": "Source-provided intelligence estimates are not imported as Agentropolis routing authority."
+    },
+    {
+      "id": "edinformatics-great-thinkers",
+      "title": "EDinformatics Great Thinkers",
+      "origin_url": "https://www.edinformatics.com/great_thinkers/",
+      "source_type": "reference_list",
+      "ingest_fields": ["identity_name", "source_url"],
+      "trust_policy": "ATTRIBUTED_REFERENCE_NOT_CANONICAL_TRUTH",
+      "notes": "The page states that its names are in random order, so page order is not interpreted as rank."
+    }
+  ],
+  "governance": {
+    "dedupe": "stable identity normalization plus explicit alias map; ambiguous merges go to review",
+    "cognitive_dna": "not populated from list membership alone",
+    "routing": "documented work, disciplines, reasoning methods, disagreement value, evidence fit, and provenance",
+    "execution_authority": "NONE",
+    "canon_promotion": "REVIEW_REQUIRED",
+    "future_sources": "approved reference lists may be appended without a population ceiling"
+  }
+}
