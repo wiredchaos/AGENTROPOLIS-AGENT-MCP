@@ -5,8 +5,17 @@ import {
   mindVaultContract,
   wikivaultJspaceBridge
 } from "./jspace.js";
+import {
+  BUSINESS_KIT_TOOLS,
+  businessKitManifest,
+  globalJurisdictionAdapterContract,
+  planBusinessSetup,
+  validateBusinessKitArguments,
+  validateBusinessReadiness
+} from "./business-kit.js";
 
 export { assembleCognitiveCouncil, jspaceManifest, mindVaultContract, wikivaultJspaceBridge } from "./jspace.js";
+export { businessKitManifest, globalJurisdictionAdapterContract, planBusinessSetup, validateBusinessReadiness } from "./business-kit.js";
 
 export const PROTOCOL_VERSION = "2025-06-18";
 
@@ -15,7 +24,7 @@ export const DISTRICTS = [
   { name: "CHAOS CODE", domain: "developer ecosystem and runtime engineering", role: "Build and integration institution", authority: "READ_ONLY", terms: ["repo", "github", "mcp", "agent", "runtime", "build", "api", "code", "cloudflare", "deploy"] },
   { name: "CHAOS RANK", domain: "SEO, distribution, and content intelligence", role: "Visibility and distribution institution", authority: "READ_ONLY", terms: ["seo", "rank", "distribution", "content", "publish", "growth", "aeo"] },
   { name: "789 STUDIOS", domain: "media, production, and storytelling", role: "Production institution", authority: "READ_ONLY", terms: ["media", "ott", "studio", "story", "production", "show", "broadcast"] },
-  { name: "NEURA", domain: "finance, tax, trust, and wallet safety", role: "Financial safety institution", authority: "READ_ONLY", terms: ["wallet", "tax", "finance", "client portal", "invoice", "legal", "payment"] },
+  { name: "NEURA", domain: "finance, tax, trust, and wallet safety", role: "Financial safety institution", authority: "READ_ONLY", terms: ["wallet", "tax", "finance", "client portal", "invoice", "legal", "payment", "business", "entity", "formation", "company", "banking", "web3", "jurisdiction", "kyb", "kyc"] },
   { name: "NTRU", domain: "cryptography, privacy, and verification", role: "Trust institution", authority: "READ_ONLY", terms: ["privacy", "verify", "cryptography", "proof", "signature", "trust"] },
   { name: "CHAOSPHERE", domain: "games, worlds, and simulations", role: "Simulation institution", authority: "READ_ONLY", terms: ["game", "world", "simulation", "arena", "boardforge", "play"] },
   { name: "ECHO", domain: "lore, canon, and archival memory", role: "Canon institution", authority: "READ_ONLY", terms: ["lore", "canon", "archive", "timeline", "story bible", "memory", "wikivault", "obsidian", "gbrain", "llm-wiki", "mind vault"] },
@@ -113,18 +122,18 @@ const CORE_TOOLS = [
   }
 ];
 
-export const TOOLS = [...CORE_TOOLS, ...JSPACE_TOOLS];
+export const TOOLS = [...CORE_TOOLS, ...BUSINESS_KIT_TOOLS, ...JSPACE_TOOLS];
 
 export function capabilityMap() {
   return {
     identity: "Agentropolis Intelligence Grid",
     layers: {
-      infrastructure: ["Agent Runtime", "Memory Layer", "WikiVault", "Obsidian Node Vault", "llm-wiki Retrieval", "gbrain Ontology", "J-SPACE INFINITY Cognitive Commons", "Mind Vault", "Skill Registry", "Dispatch Protocol", "MCP Capability Membrane", "Receipt Ledger"],
+      infrastructure: ["Agent Runtime", "Memory Layer", "WikiVault", "Obsidian Node Vault", "llm-wiki Retrieval", "gbrain Ontology", "J-SPACE INFINITY Cognitive Commons", "Mind Vault", "Skill Registry", "Dispatch Protocol", "MCP Capability Membrane", "Global Agent Business Kit", "Receipt Ledger"],
       districts: DISTRICTS.map(({ name, domain, role, authority }) => ({ name, domain, role, authority })),
-      applications: ["Command Atrium", "District dashboards", "Creator surfaces", "Wallet safety tools", "Media surfaces", "Games and simulations"]
+      applications: ["Command Atrium", "District dashboards", "Creator surfaces", "Wallet safety tools", "Media surfaces", "Games and simulations", "Hermes Bot Mode adapters"]
     },
     governedFlow: ["Identity", "Mandate", "Evidence", "Deliberate", "Plan", "Policy Gate", "Execute", "Receipt", "Audit", "Outcome Feedback"],
-    authorityBoundary: { public: "READ_ONLY", wallet: "NO_AUTHORITY", payment: "NO_AUTHORITY", publish: "NO_AUTHORITY", destructive: "NO_AUTHORITY", selfEscalation: false }
+    authorityBoundary: { public: "READ_ONLY", filings: "NO_AUTHORITY", taxChanges: "NO_AUTHORITY", wallet: "NO_AUTHORITY", payment: "NO_AUTHORITY", publish: "NO_AUTHORITY", destructive: "NO_AUTHORITY", selfEscalation: false }
   };
 }
 
@@ -141,11 +150,12 @@ export function deploymentManifest(env) {
     publicAuthority: "READ_ONLY",
     tools: TOOLS.map(({ name, title, description, annotations }) => ({ name, title, description, annotations })),
     endpoints: { health: "/health", manifest: "/.well-known/mcp.json", tools: "/api/tools", districts: "/api/districts", receipts: "/api/receipts" },
-    security: ["origin_allowlist", "host_consistency", "body_limit", "rate_limit", "input_validation", "hashed_receipts", "operator_only_receipt_api", "wikivault_provenance", "no_hidden_cot_exposure"]
+    security: ["origin_allowlist", "host_consistency", "body_limit", "rate_limit", "input_validation", "hashed_receipts", "operator_only_receipt_api", "wikivault_provenance", "global_jurisdiction_provenance", "no_hidden_cot_exposure"]
   };
 }
 
 export function validateArguments(tool, args) {
+  if (BUSINESS_KIT_TOOLS.some((item) => item.name === tool.name)) return validateBusinessKitArguments(tool, args);
   if (!args || typeof args !== "object" || Array.isArray(args)) return "arguments must be an object";
   const allowed = new Set(Object.keys(tool.inputSchema.properties || {}));
   for (const key of Object.keys(args)) if (!allowed.has(key)) return `unexpected argument: ${key}`;
