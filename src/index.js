@@ -1,4 +1,4 @@
-import { DISTRICTS, PROTOCOL_VERSION, TOOLS, assessRisk, capabilityMap, deploymentManifest, routeFrontDesk, validateArguments } from "./core.js";
+import { DISTRICTS, PROTOCOL_VERSION, TOOLS, assessRisk, businessKitManifest, capabilityMap, deploymentManifest, globalJurisdictionAdapterContract, planBusinessSetup, routeFrontDesk, validateArguments, validateBusinessReadiness } from "./core.js";
 
 const MCP_PATHS = new Set(["/mcp", "/mcp/"]);
 let schemaReady;
@@ -45,7 +45,7 @@ async function mcp(request, env, requestId) {
       protocolVersion: PROTOCOL_VERSION,
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: "Agentropolis MCP Capability Membrane", version: env.SERVICE_VERSION || "1.0.0" },
-      instructions: "Use these tools to route, inspect, map, and assess. This server has READ_ONLY authority and cannot sign, pay, publish, delete, mutate permissions, or self-escalate."
+      instructions: "Use these tools to route, inspect, map, assess, and plan. This server has READ_ONLY authority and cannot file, sign, pay, publish, delete, mutate permissions, move assets, or self-escalate."
     });
   }
   if (message.method === "ping") return rpcResult(message.id, {});
@@ -75,6 +75,10 @@ async function executeTool(name, args, env, requestId, identity) {
   } else if (name === "assess_mcp_request_risk") output = { assessment: assessRisk(args) };
   else if (name === "get_agentropolis_capability_map") output = { capabilityMap: capabilityMap() };
   else if (name === "get_cloudflare_deployment_manifest") output = { deployment: deploymentManifest(env) };
+  else if (name === "get_agent_business_kit_manifest") output = { businessKit: businessKitManifest() };
+  else if (name === "get_global_jurisdiction_adapter_contract") output = { jurisdictionAdapter: globalJurisdictionAdapterContract() };
+  else if (name === "plan_agent_business_setup") output = { plan: planBusinessSetup(args) };
+  else if (name === "validate_agent_business_readiness") output = { readiness: validateBusinessReadiness(args) };
   else throw Object.assign(new Error("Unknown tool"), { status: 400, code: "UNKNOWN_TOOL" });
   const receipt = await writeReceipt(env, { requestId, toolName: name, actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: args, output, durationMs: Date.now() - started });
   return { output: { ...output, receipt }, receipt };
