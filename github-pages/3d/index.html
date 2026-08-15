@@ -3,14 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Agentropolis 3D Intelligence Grid, HERMES MCP install surface, and governed Intelligence Observatory.">
+  <meta name="description" content="Agentropolis 3D Intelligence Grid, HERMES MCP install surface, governed Intelligence Observatory, and JSpace Neural Fabric beta.">
   <meta name="theme-color" content="#020306">
   <title>Agentropolis 3D</title>
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./observatory.css">
+  <link rel="stylesheet" href="./jspace-neural.css">
   <script src="./main.js" defer></script>
   <script src="./observatory.js" defer></script>
   <script src="./observatory-race-guard.js" defer></script>
+  <script src="./jspace-neural.js" defer></script>
 </head>
 <body>
   <div id="app" class="app">
@@ -32,6 +34,7 @@
         <div class="hero-actions">
           <button class="glass-button primary" data-open="hermes">Dock HERMES</button>
           <button class="glass-button" data-open="observatory">Open Observatory</button>
+          <button class="glass-button" data-open="neural">Open JSpace Neural Fabric</button>
           <button class="glass-button" id="focusButton">City focus</button>
         </div>
       </section>
@@ -82,6 +85,27 @@
         <p class="note">The preview is a canonical reference model. “Live” appears only when the Worker returns receipt-backed D1 aggregates. Hidden chain-of-thought and private model state are never exposed.</p>
       </section>
 
+      <section id="neuralPanel" class="glass drawer neural-panel" aria-hidden="true">
+        <div class="drawer-head"><div><p>JSPACE NEURAL FABRIC · BETA</p><h2>Spatial cognition surface for governed memory.</h2></div><button class="icon-button close" aria-label="Close JSpace Neural Fabric">×</button></div>
+        <div class="neural-toolbar">
+          <button id="neuralSync" class="active">Sync JSpace</button>
+          <button id="neuralClear">Clear thought path</button>
+        </div>
+        <div id="neuralStatus" class="readout neural-status-preview">INITIALIZING · READ ONLY</div>
+        <div class="neural-grid">
+          <div class="neural-stage">
+            <canvas id="neuralCanvas" aria-label="JSpace Neural Fabric knowledge visualization"></canvas>
+            <div id="neuralTooltip" class="neural-tooltip"></div>
+            <div class="neural-hint">Drag to sketch a thought path · hover a neuron to inspect · no direct memory mutation</div>
+          </div>
+          <div class="neural-side">
+            <div class="neural-card"><p>FABRIC STATE</p><div class="neural-stats"><div class="neural-stat"><b id="neuralNodeCount">0</b><small>neurons</small></div><div class="neural-stat"><b id="neuralEdgeCount">0</b><small>synapses</small></div><div class="neural-stat"><b id="neuralAuthority">READ_ONLY</b><small>authority</small></div><div class="neural-stat"><b id="neuralPlacement">Layer 1</b><small>placement</small></div></div></div>
+            <div class="neural-card"><p>SEMANTIC REGIONS</p><ul class="neural-legend"><li><i style="color:#00f5d4;background:#00f5d4"></i>Evidence · WikiVault authority</li><li><i style="color:#00bde8;background:#00bde8"></i>Human editable · Obsidian</li><li><i style="color:#a75cff;background:#a75cff"></i>Retrieval · RAG / llm-wiki</li><li><i style="color:#f3cf72;background:#f3cf72"></i>Ontology · gBRAIN projection</li><li><i style="color:#ff5da2;background:#ff5da2"></i>Cognition · councils / lenses</li><li><i style="color:#ff2a4f;background:#ff2a4f"></i>Governance · policy / receipts</li></ul></div>
+            <div class="neural-card"><p>BETA LAW</p><span>Visual prominence is not truth. Retrieval relevance cannot promote canon. The surface consumes bounded JSpace state and preserves the existing read-only authority ceiling.</span></div>
+          </div>
+        </div>
+      </section>
+
       <section id="mediaPanel" class="glass drawer" aria-hidden="true">
         <div class="drawer-head"><div><p>HERO MEDIA DOCK</p><h2>Project video behind the city.</h2></div><button class="icon-button close" aria-label="Close hero media dock">×</button></div>
         <div class="upload-zone"><input id="heroUpload" type="file" accept="video/mp4,video/webm,video/ogg"><label for="heroUpload"><span class="upload-led"></span><strong>Upload video hero</strong><small>MP4 · WebM · Ogg · 200 MB local ceiling</small></label></div>
@@ -96,6 +120,7 @@
       <button data-open="city"><span>⌘</span>City</button>
       <button data-open="hermes"><span>◈</span>HERMES</button>
       <button data-open="observatory"><span>◎</span>Observatory</button>
+      <button data-open="neural"><span>⌁</span>JSpace</button>
       <button data-open="media"><span>▣</span>Hero media</button>
     </nav>
 

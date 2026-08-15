@@ -21,6 +21,8 @@ const required = [
   'github-pages/3d/styles.css',
   'github-pages/3d/observatory.js',
   'github-pages/3d/observatory.css',
+  'github-pages/3d/jspace-neural.js',
+  'github-pages/3d/jspace-neural.css',
   'migrations/0001_core.sql',
   'README.md',
   'SECURITY.md',
@@ -42,7 +44,10 @@ const wrangler = await readFile(new URL('wrangler.jsonc', root), 'utf8');
 const migration = await readFile(new URL('migrations/0001_core.sql', root), 'utf8');
 const observatoryUi = await readFile(new URL('github-pages/3d/observatory.js', root), 'utf8');
 const observatoryMarkup = await readFile(new URL('github-pages/3d/index.html', root), 'utf8');
+const neuralUi = await readFile(new URL('github-pages/3d/jspace-neural.js', root), 'utf8');
+const neuralCss = await readFile(new URL('github-pages/3d/jspace-neural.css', root), 'utf8');
 const observatorySurface = `${observatoryUi}\n${observatoryMarkup}`;
+const neuralSurface = `${neuralUi}\n${neuralCss}\n${observatoryMarkup}`;
 
 for (const token of ['tools/list', 'tools/call', 'initialize', 'ALLOW_READ_ONLY', 'writeReceipt']) {
   if (!worker.includes(token)) throw new Error(`base worker missing ${token}`);
@@ -88,6 +93,10 @@ for (const table of ['execution_receipts', 'security_events', 'rate_limits']) {
 for (const token of ['INTELLIGENCE OBSERVATORY', 'Sync through MCP', 'get_agentropolis_topology', 'OBSERVATORY_STRUCTURE']) {
   if (!observatorySurface.includes(token)) throw new Error(`3D observatory surface missing ${token}`);
 }
+for (const token of ['JSPACE NEURAL FABRIC · BETA', 'neuralCanvas', '/api/jspace?view=manifest', 'READ_ONLY', 'receipt?.id', 'CANONICAL PREVIEW · WORKER UNAVAILABLE']) {
+  if (!neuralSurface.includes(token)) throw new Error(`JSpace neural surface missing ${token}`);
+}
+if (/method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)/i.test(neuralUi)) throw new Error('JSpace neural beta must remain read-only');
 
 const files = [];
 async function walk(dir) {
@@ -113,4 +122,4 @@ for (const file of files) {
 for (const banned of ['wallet_sign', 'send_payment', 'publish_external', 'delete_resource', 'grant_permission']) {
   if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`) || jspace.includes(`name: "${banned}"`)) throw new Error(`forbidden public tool ${banned}`);
 }
-console.log(`Deployment validation passed: ${required.length} required files, 14 read-only MCP tools, 4 observatory views, 3 J-Space API views, 3 D1 tables.`);
+console.log(`Deployment validation passed: ${required.length} required files, 14 read-only MCP tools, 4 observatory views, 3 J-Space API views, JSpace Neural Fabric beta surface, 3 D1 tables.`);
