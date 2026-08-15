@@ -7,6 +7,12 @@ import {
   validateArguments,
   wikivaultJspaceBridge
 } from "./core.js";
+import {
+  normalizeProjectionInput,
+  readProjection,
+  storeProjection,
+  validateProjectionInput
+} from "./jspace-projection.js";
 
 const JSPACE_TOOL_NAMES = new Set([
   "get_jspace_manifest",
@@ -30,14 +36,44 @@ export default {
         const rate = await rateLimit(request, env);
         if (!rate.allowed) return decorate(errorJson(429, "RATE_LIMITED", "Request limit exceeded."), request, env, requestId);
         const view = url.searchParams.get("view") || "manifest";
+        if (view === "projection") {
+          const projection = await readProjection(env.DB).catch(() => null);
+          const ifNoneMatch = request.headers.get("if-none-match")?.replace(/^W\//, "").replaceAll('"', "");
+          if (projection && ifNoneMatch === projection.revision) {
+            return decorate(new Response(null, { status: 304, headers: { etag: `"${projection.revision}"` } }), request, env, requestId);
+          }
+          const output = projection
+            ? { projection: projection.projection, revision: projection.revision, source: projection.source, sourceRevision: projection.sourceRevision, createdAt: projection.createdAt, state: "LIVE_DERIVED_PROJECTION" }
+            : { projection: null, revision: null, state: "NO_PROJECTION_AVAILABLE", authority: "READ_ONLY" };
+          const identity = await actorIdentity(request, env);
+          const receipt = await writeReceipt(env, { requestId, toolName: "get_jspace_memory_projection", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: {}, output, durationMs: 0 });
+          return decorate(json({ ...output, receipt }, 200, projection ? { etag: `"${projection.revision}"`, "cache-control": "public, max-age=15, stale-while-revalidate=45" } : { "cache-control": "no-store" }), request, env, requestId);
+        }
         const name = view === "manifest" ? "get_jspace_manifest"
           : view === "wikivault" ? "get_wikivault_jspace_bridge"
           : view === "mind-vault" ? "get_mind_vault_contract"
           : null;
-        if (!name) return decorate(errorJson(400, "INVALID_VIEW", "view must be manifest, wikivault, or mind-vault."), request, env, requestId);
+        if (!name) return decorate(errorJson(400, "INVALID_VIEW", "view must be manifest, wikivault, mind-vault, or projection."), request, env, requestId);
         const identity = await actorIdentity(request, env);
         const result = await executeJspaceTool(name, {}, env, requestId, identity);
         return decorate(json(result.output), request, env, requestId);
+      }
+
+      if (url.pathname === "/api/jspace/projection/sync" && request.method === "POST") {
+        const guard = requestGuard(request, env);
+        if (guard) return decorate(guard, request, env, requestId);
+        const auth = authorizeOperator(request, env);
+        if (auth) return decorate(auth, request, env, requestId);
+        const body = await tryInspectJson(request.clone(), env);
+        if (!body) return decorate(errorJson(400, "INVALID_JSON", "A valid JSON projection is required."), request, env, requestId);
+        const problem = validateProjectionInput(body);
+        if (problem) return decorate(errorJson(400, "INVALID_PROJECTION", problem), request, env, requestId);
+        const projection = normalizeProjectionInput(body);
+        const identity = await actorIdentity(request, env);
+        const stored = await storeProjection(env.DB, projection, identity.actorIdHash);
+        const output = { accepted: true, authority: "DERIVED_CACHE_ONLY", ...stored, stats: projection.stats };
+        const receipt = await writeReceipt(env, { requestId, toolName: "sync_jspace_memory_projection", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: { source: projection.source, sourceRevision: projection.sourceRevision, nodeCount: projection.nodes.length, edgeCount: projection.edges.length }, output, durationMs: 0, authorityDecision: "ALLOW_DERIVED_CACHE_WRITE" });
+        return decorate(json({ ...output, receipt }, 202, { etag: `"${stored.revision}"` }), request, env, requestId);
       }
 
       if (MCP_PATHS.has(url.pathname) && request.method === "POST") {
@@ -152,11 +188,12 @@ async function rateLimit(request, env) {
 }
 
 async function writeReceipt(env, data) {
-  const receipt = { id: `rcpt_${crypto.randomUUID()}`, persisted: false, authorityDecision: "ALLOW_READ_ONLY" };
+  const authorityDecision = data.authorityDecision || "ALLOW_READ_ONLY";
+  const receipt = { id: `rcpt_${crypto.randomUUID()}`, persisted: false, authorityDecision };
   try {
     await ensureSchema(env.DB);
     await env.DB.prepare("INSERT INTO execution_receipts (id,request_id,tool_name,tool_version,actor_type,actor_id_hash,authority_decision,input_hash,output_hash,status,duration_ms,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
-      .bind(receipt.id, data.requestId, data.toolName, "1.1.0-jspace", data.actorType, data.actorIdHash, "ALLOW_READ_ONLY", await sha256(stable(data.input)), await sha256(stable(data.output)), "success", data.durationMs, new Date().toISOString()).run();
+      .bind(receipt.id, data.requestId, data.toolName, "1.2.0-jspace-projection", data.actorType, data.actorIdHash, authorityDecision, await sha256(stable(data.input)), await sha256(stable(data.output)), "success", data.durationMs, new Date().toISOString()).run();
     receipt.persisted = true;
   } catch (error) {
     console.warn(JSON.stringify({ event: "jspace_receipt_persistence_failed", receiptId: receipt.id, message: error instanceof Error ? error.message : "unknown" }));
@@ -229,10 +266,10 @@ function decorate(response, request, env, requestId) {
   if (origin && originAllowed(origin, selfOrigin, env.ALLOWED_ORIGINS)) {
     headers.set("access-control-allow-origin", origin);
     headers.set("vary", "Origin");
-    headers.set("access-control-allow-headers", "authorization,content-type,mcp-protocol-version");
+    headers.set("access-control-allow-headers", "authorization,content-type,mcp-protocol-version,if-none-match");
     headers.set("access-control-allow-methods", "GET,POST,OPTIONS");
   }
   headers.set("x-request-id", requestId);
-  headers.set("x-agentropolis-authority", "READ_ONLY");
+  headers.set("x-agentropolis-authority", "READ_ONLY_PUBLIC_SURFACE");
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
