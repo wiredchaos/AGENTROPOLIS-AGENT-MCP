@@ -15,22 +15,25 @@ test('JSpace Neural Fabric is mounted in the 3D mission-control surface', () => 
   assert.match(html, /jspace-neural\.css/);
 });
 
-test('neural fabric consumes the existing governed JSpace API and preserves read-only authority', () => {
+test('neural fabric prefers the governed record-level projection and remains read-only', () => {
+  assert.match(js, /\/api\/jspace\?view=projection/);
   assert.match(js, /\/api\/jspace\?view=manifest/);
-  assert.match(js, /READ_ONLY/);
+  assert.match(js, /DERIVED_READ_ONLY_PROJECTION/);
   assert.doesNotMatch(js, /fetch\([^\n]+method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)/i);
   assert.match(html, /no direct memory mutation/i);
   assert.match(html, /Retrieval relevance cannot promote canon/i);
 });
 
-test('neural fabric distinguishes live receipt-backed state from canonical preview', () => {
-  assert.match(js, /receipt\?\.id/);
-  assert.match(js, /LIVE · RECEIPT-BACKED JSPACE/);
-  assert.match(js, /CANONICAL PREVIEW · WORKER UNAVAILABLE/);
+test('neural fabric distinguishes live memory projection from architecture fallback', () => {
+  assert.match(js, /LIVE MEMORY PROJECTION/);
+  assert.match(js, /CANONICAL PREVIEW · LIVE PROJECTION UNAVAILABLE/);
+  assert.match(js, /if-none-match/i);
+  assert.match(js, /setInterval/);
 });
 
-test('neural surface includes semantic regions and responsive styling', () => {
-  for (const region of ['evidence','human_editable','retrieval','ontology','cognition','governance']) assert.match(js, new RegExp(region));
+test('neural surface exposes verification, challenge, torque, and provenance semantics', () => {
+  for (const token of ['challengeState', 'evidenceState', 'torque', 'provenanceHash', 'sourceRef']) assert.match(js, new RegExp(token));
+  assert.match(js, /contradict\|challenge\|conflict/);
   assert.match(css, /\.neural-grid/);
   assert.match(css, /@media/);
 });
