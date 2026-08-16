@@ -1,0 +1,30 @@
+{
+  "adapter": "herdr",
+  "version": 1,
+  "mode": "optional-local-runtime",
+  "public_remote_exposure": false,
+  "capabilities": [
+    {"name":"runtime.agent.list","risk":"read_only","default":"allow_local"},
+    {"name":"runtime.agent.read","risk":"read_only","default":"allow_local_bounded"},
+    {"name":"runtime.agent.prompt","risk":"execution","default":"approval_or_policy_gate"},
+    {"name":"runtime.agent.wait","risk":"read_only","default":"allow_local"},
+    {"name":"runtime.agent.spawn","risk":"execution","default":"approval_or_policy_gate"},
+    {"name":"runtime.pane.list","risk":"read_only","default":"allow_local"},
+    {"name":"runtime.pane.read","risk":"read_only","default":"allow_local_bounded"},
+    {"name":"runtime.pane.run","risk":"execution","default":"approval_or_policy_gate"},
+    {"name":"runtime.pane.wait","risk":"read_only","default":"allow_local"},
+    {"name":"runtime.session.inspect","risk":"read_only","default":"allow_local"}
+  ],
+  "denied_by_default": [
+    "runtime.server.stop",
+    "runtime.session.destroy",
+    "runtime.pane.close.foreign",
+    "runtime.shell.unbounded",
+    "runtime.secret.read"
+  ],
+  "telemetry": {
+    "consumer": ["HERMES_WATCHTOWER", "WORKFLOW_GENOME", "SWARM_ROOM"],
+    "states": ["working", "blocked", "done", "idle", "unknown"],
+    "correctness_inference": false
+  }
+}
