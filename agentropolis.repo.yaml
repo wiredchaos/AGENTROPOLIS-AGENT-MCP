@@ -1,0 +1,53 @@
+schema_version: 1.0.0
+repo_id: agent-mcp
+display_name: Agentropolis Agent MCP
+system_role: governed-capability-membrane
+district: null
+canonical:
+  provider: github
+  repository: wiredchaos/AGENTROPOLIS-AGENT-MCP
+  default_branch: main
+  release_source: true
+  direct_main_push: false
+gitlawb:
+  role: agent-coding-workspace
+  node_env: GITLAWB_NODE
+  workspace_status: unlinked
+  repository: null
+  owner_did: null
+  promotion_mode: validated-branch-to-github-pr
+  branch_prefix: gitlawb/
+hermes:
+  orchestrator: mission-control
+  router_skill: repo-federation-router
+  allowed_actions: [inspect, create-branch, run-validation, open-pull-request, prepare-staging]
+  forbidden_actions: [direct-main-push, self-approve, unscoped-tool-execution, deploy-production-without-approval, expose-secrets]
+commands:
+  install: npm install
+  lint: null
+  test: npm test
+  typecheck: null
+  build: npm run validate
+  dry_deploy: npm run deploy:dry
+security:
+  preflight: wiredchaos/AGENTROPOLIS-54T
+  capability_membrane: wiredchaos/AGENTROPOLIS-AGENT-MCP
+  human_approval_required: true
+  secret_policy: never-in-prompts-logs-or-receipts
+deployment:
+  control_plane: wiredchaos/AGENTROPOLIS-DEPLOY
+  provider: cloudflare
+  target: worker-d1-mcp
+  status: deployment-candidate
+  working_directory: null
+  health_endpoint: /health
+  readiness_endpoint: /.well-known/mcp.json
+  staging_required: true
+  production_approval_required: true
+dependencies: [wiredchaos/AGENTROPOLIS-54T, wiredchaos/MCP-Ranger, wiredchaos/AGENTROPOLIS-DEPLOY]
+receipts:
+  build: required
+  test: required
+  security: required
+  deployment: required
+  rollback: required
