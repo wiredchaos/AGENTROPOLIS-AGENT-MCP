@@ -80,7 +80,7 @@ test('dry-run HTTP route resolves authoritative D1 receipt and never invokes pro
   const receipt = await createAuthorizationReceipt(requestBody, {
     ...baseEnv,
     EXECUTION_MODE: 'AUTHORIZATION_ONLY',
-  }, new Date('2026-08-21T06:00:00.000Z'));
+  }, new Date());
 
   const response = await worker.fetch(new Request('https://example.test/api/execution/dry-run', {
     method: 'POST',
