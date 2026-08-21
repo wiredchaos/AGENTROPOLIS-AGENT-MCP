@@ -16,6 +16,11 @@ import {
   storeProjection,
   validateProjectionInput
 } from "./jspace-projection.js";
+import {
+  createAuthorizationReceipt,
+  persistAuthorizationReceipt,
+  toHermesCityProjection,
+} from "./execution-corridor.js";
 
 const JSPACE_TOOL_NAMES = new Set([
   "get_jspace_manifest",
@@ -33,6 +38,37 @@ export default {
     const requestId = request.headers.get("cf-ray") || crypto.randomUUID();
 
     try {
+      if (url.pathname === "/api/execution/authorize" && request.method === "POST") {
+        const guard = requestGuard(request, env);
+        if (guard) return decorate(guard, request, env, requestId);
+        const auth = authorizeOperator(request, env);
+        if (auth) return decorate(auth, request, env, requestId);
+        const body = await tryInspectJson(request.clone(), env);
+        if (!body) return decorate(errorJson(400, "INVALID_JSON", "A valid JSON execution authorization request is required."), request, env, requestId);
+        const receipt = await createAuthorizationReceipt(body, env);
+        let persisted = false;
+        try {
+          await ensureSchema(env.DB);
+          await persistAuthorizationReceipt(env.DB, receipt);
+          persisted = true;
+        } catch (error) {
+          console.warn(JSON.stringify({ event: "authorization_receipt_persistence_failed", receiptId: receipt.receipt_id, message: error instanceof Error ? error.message : "unknown" }));
+        }
+        const output = {
+          decision: receipt.authority_decision,
+          authorization_receipt_id: receipt.receipt_id,
+          reasons: receipt.reasons,
+          issued_at: receipt.issued_at,
+          expires_at: receipt.expires_at,
+          policy_scope: receipt.policy_profile,
+          mode: receipt.mode,
+          persisted,
+          invocation_performed: false,
+          hermes_city: toHermesCityProjection(receipt.authority_decision === "ALLOW_EXECUTION" ? "AUTHORIZED" : "FAILED", receipt),
+        };
+        return decorate(json(output, receipt.authority_decision === "DENY_EXECUTION" ? 403 : 200), request, env, requestId);
+      }
+
       if (url.pathname === "/api/jspace" && request.method === "GET") {
         const guard = requestGuard(request, env);
         if (guard) return decorate(guard, request, env, requestId);
@@ -251,6 +287,8 @@ async function ensureSchema(db) {
     db.prepare("CREATE TABLE IF NOT EXISTS execution_receipts (id TEXT PRIMARY KEY,request_id TEXT NOT NULL,tool_name TEXT NOT NULL,tool_version TEXT NOT NULL,actor_type TEXT NOT NULL,actor_id_hash TEXT,authority_decision TEXT NOT NULL,input_hash TEXT NOT NULL,output_hash TEXT,status TEXT NOT NULL CHECK(status IN ('success','error')),duration_ms INTEGER NOT NULL CHECK(duration_ms>=0),created_at TEXT NOT NULL)"),
     db.prepare("CREATE INDEX IF NOT EXISTS idx_receipts_created ON execution_receipts(created_at DESC)"),
     db.prepare("CREATE TABLE IF NOT EXISTS rate_limits (key_hash TEXT NOT NULL,window_start INTEGER NOT NULL,count INTEGER NOT NULL,updated_at TEXT NOT NULL,PRIMARY KEY(key_hash,window_start))")
+    ,db.prepare("CREATE TABLE IF NOT EXISTS execution_authorizations (receipt_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,production_id TEXT NOT NULL,job_id TEXT NOT NULL,provider_id TEXT NOT NULL,runtime_id TEXT NOT NULL,adapter_id TEXT NOT NULL,capability TEXT NOT NULL,capability_handle_id TEXT NOT NULL,authority_decision TEXT NOT NULL,policy_profile TEXT NOT NULL,risk_class TEXT NOT NULL,budget_class TEXT NOT NULL,attestation_summary TEXT NOT NULL,input_hash TEXT NOT NULL,authorization_hash TEXT NOT NULL,issued_at TEXT NOT NULL,expires_at TEXT NOT NULL,revoked_at TEXT,status TEXT NOT NULL)")
+    ,db.prepare("CREATE INDEX IF NOT EXISTS idx_execution_auth_job ON execution_authorizations(production_id,job_id)")
   ]).catch((error) => { schemaReady = undefined; throw error; });
   return schemaReady;
 }
