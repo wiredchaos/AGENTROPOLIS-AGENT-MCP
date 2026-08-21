@@ -15,6 +15,9 @@ const required = [
   'src/jspace-index.js',
   'src/jspace-projection.js',
   'src/wikivault-jspace-adapter.js',
+  'src/execution-corridor.js',
+  'src/dry-run-executor.js',
+  'src/execution-beta-index.js',
   'public/index.html',
   'public/styles.css',
   'public/script.js',
@@ -27,6 +30,7 @@ const required = [
   'github-pages/3d/jspace-neural.css',
   'migrations/0001_core.sql',
   'migrations/0002_jspace_projection.sql',
+  'migrations/0003_execution_authorizations.sql',
   'scripts/sync-jspace-projection.mjs',
   'README.md',
   'SECURITY.md',
@@ -46,10 +50,14 @@ const jspace = await readFile(new URL('src/jspace.js', root), 'utf8');
 const jspaceWrapper = await readFile(new URL('src/jspace-index.js', root), 'utf8');
 const projection = await readFile(new URL('src/jspace-projection.js', root), 'utf8');
 const adapter = await readFile(new URL('src/wikivault-jspace-adapter.js', root), 'utf8');
+const executionCorridor = await readFile(new URL('src/execution-corridor.js', root), 'utf8');
+const dryRunExecutor = await readFile(new URL('src/dry-run-executor.js', root), 'utf8');
+const executionWrapper = await readFile(new URL('src/execution-beta-index.js', root), 'utf8');
 const syncScript = await readFile(new URL('scripts/sync-jspace-projection.mjs', root), 'utf8');
 const wrangler = await readFile(new URL('wrangler.jsonc', root), 'utf8');
 const migration = await readFile(new URL('migrations/0001_core.sql', root), 'utf8');
 const projectionMigration = await readFile(new URL('migrations/0002_jspace_projection.sql', root), 'utf8');
+const authorizationMigration = await readFile(new URL('migrations/0003_execution_authorizations.sql', root), 'utf8');
 const observatoryUi = await readFile(new URL('github-pages/3d/observatory.js', root), 'utf8');
 const observatoryMarkup = await readFile(new URL('github-pages/3d/index.html', root), 'utf8');
 const neuralUi = await readFile(new URL('github-pages/3d/jspace-neural.js', root), 'utf8');
@@ -71,6 +79,15 @@ for (const token of ['DERIVED_READ_ONLY_PROJECTION', 'SECURITY_ONLY', 'MAX_NODES
 }
 for (const token of ['record_id', 'evidence_state', 'provenanceHash', 'challengeState', 'computeTorque']) {
   if (!adapter.includes(token)) throw new Error(`WikiVault J-Space adapter missing ${token}`);
+}
+for (const token of ['loadAuthorizationReceipt', 'authorizationInputHash', 'execution corridor is disabled', 'invocation_performed: false', 'receipt_id']) {
+  if (!executionCorridor.includes(token)) throw new Error(`execution corridor missing ${token}`);
+}
+for (const token of ['DRY_RUN_ACCEPTED', 'loadAuthorizationReceipt', 'provider_invocation: \'DISABLED\'', 'invocation_performed: false', 'authoritative authorization']) {
+  if (!dryRunExecutor.includes(token)) throw new Error(`dry-run executor missing ${token}`);
+}
+for (const token of ['/api/execution/dry-run', 'executeGovernedDryRun', 'createDryRunReceipt', 'authorizeOperator', 'MCP_API_TOKEN', 'jspaceWorker.fetch']) {
+  if (!executionWrapper.includes(token)) throw new Error(`execution beta wrapper missing ${token}`);
 }
 for (const token of ['MCP_API_TOKEN', '/api/jspace/projection/sync', 'wikivault-export']) {
   if (!syncScript.includes(token)) throw new Error(`J-Space sync script missing ${token}`);
@@ -101,7 +118,7 @@ for (const name of [
 ]) {
   if (!jspace.includes(name)) throw new Error(`missing J-Space tool ${name}`);
 }
-for (const token of ['"binding": "DB"', '"binding": "ASSETS"', '"/mcp"', '"main": "src/jspace-index.js"']) {
+for (const token of ['"binding": "DB"', '"binding": "ASSETS"', '"/mcp"', '"main": "src/execution-beta-index.js"', '"EXECUTION_MODE": "DRY_RUN"']) {
   if (!wrangler.includes(token)) throw new Error(`wrangler missing ${token}`);
 }
 for (const table of ['execution_receipts', 'security_events', 'rate_limits']) {
@@ -109,6 +126,9 @@ for (const table of ['execution_receipts', 'security_events', 'rate_limits']) {
 }
 for (const table of ['jspace_projection_snapshots', 'jspace_projection_state']) {
   if (!projectionMigration.includes(`CREATE TABLE IF NOT EXISTS ${table}`)) throw new Error(`projection migration missing ${table}`);
+}
+if (!authorizationMigration.includes('CREATE TABLE IF NOT EXISTS execution_authorizations')) {
+  throw new Error('authorization migration missing execution_authorizations');
 }
 for (const token of ['INTELLIGENCE OBSERVATORY', 'Sync through MCP', 'get_agentropolis_topology', 'OBSERVATORY_STRUCTURE']) {
   if (!observatorySurface.includes(token)) throw new Error(`3D observatory surface missing ${token}`);
@@ -140,6 +160,6 @@ for (const file of files) {
   if (text) for (const pattern of patterns) if (pattern.test(text)) throw new Error(`possible secret in ${relative(fileURLToPath(root), file)}`);
 }
 for (const banned of ['wallet_sign', 'send_payment', 'publish_external', 'delete_resource', 'grant_permission']) {
-  if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`) || jspace.includes(`name: "${banned}"`)) throw new Error(`forbidden public tool ${banned}`);
+  if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`) || jspace.includes(`name: "${banned}")) throw new Error(`forbidden public tool ${banned}`);
 }
-console.log(`Deployment validation passed: ${required.length} required files, record-level JSpace projection API, governed WikiVault adapter, 4 observatory views, 4 J-Space API views, Neural Fabric beta, 5 D1 tables.`);
+console.log(`Deployment validation passed: ${required.length} required files, execution beta wrapper, authoritative DRY_RUN, record-level JSpace projection API, governed WikiVault adapter, 4 observatory views, 4 J-Space API views, Neural Fabric beta, 6 D1 tables.`);
