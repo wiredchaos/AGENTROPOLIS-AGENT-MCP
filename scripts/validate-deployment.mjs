@@ -160,6 +160,6 @@ for (const file of files) {
   if (text) for (const pattern of patterns) if (pattern.test(text)) throw new Error(`possible secret in ${relative(fileURLToPath(root), file)}`);
 }
 for (const banned of ['wallet_sign', 'send_payment', 'publish_external', 'delete_resource', 'grant_permission']) {
-  if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`) || jspace.includes(`name: "${banned}")) throw new Error(`forbidden public tool ${banned}`);
+  if (core.includes(`name: "${banned}"`) || observatory.includes(`name: "${banned}"`) || jspace.includes(`name: "${banned}"`)) throw new Error(`forbidden public tool ${banned}`);
 }
 console.log(`Deployment validation passed: ${required.length} required files, execution beta wrapper, authoritative DRY_RUN, record-level JSpace projection API, governed WikiVault adapter, 4 observatory views, 4 J-Space API views, Neural Fabric beta, 6 D1 tables.`);
