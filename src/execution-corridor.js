@@ -58,6 +58,16 @@ function validateCanary(request, env) {
   return reasons;
 }
 
+export async function authorizationInputHash(request = {}) {
+  return sha256(stable({
+    ...request,
+    capability_handle: {
+      handle_id: request?.capability_handle?.handle_id,
+      scope: request?.capability_handle?.scope,
+    },
+  }));
+}
+
 export async function createAuthorizationReceipt(request, env = {}, now = new Date()) {
   const validation = validateExecutionRequest(request);
   const reasons = [...validation.errors];
@@ -99,7 +109,7 @@ export async function createAuthorizationReceipt(request, env = {}, now = new Da
     risk_class: request.risk_class,
     budget_class: request.budget_class,
     attestation_summary: evidence,
-    input_hash: await sha256(stable({ ...request, capability_handle: { handle_id: request.capability_handle?.handle_id, scope: request.capability_handle?.scope } })),
+    input_hash: await authorizationInputHash(request),
     issued_at: issuedAt,
     expires_at: expiresAt,
     revoked_at: null,
@@ -127,6 +137,48 @@ export async function persistAuthorizationReceipt(db, receipt) {
   return { receipt_id: receipt.receipt_id, persisted: true };
 }
 
+export async function loadAuthorizationReceipt(db, receiptId) {
+  if (!nonEmpty(receiptId)) throw new TypeError('receipt_id is required');
+  if (!db) throw new Error('D1 binding unavailable');
+  const row = await db.prepare(`SELECT
+      receipt_id,request_id,production_id,job_id,provider_id,runtime_id,adapter_id,capability,capability_handle_id,
+      authority_decision,policy_profile,risk_class,budget_class,attestation_summary,input_hash,authorization_hash,
+      issued_at,expires_at,revoked_at,status
+    FROM execution_authorizations WHERE receipt_id=? LIMIT 1`).bind(receiptId).first();
+  if (!row) return null;
+  let attestationSummary = {};
+  try {
+    attestationSummary = typeof row.attestation_summary === 'string'
+      ? JSON.parse(row.attestation_summary)
+      : (row.attestation_summary || {});
+  } catch {
+    attestationSummary = {};
+  }
+  return {
+    receipt_id: row.receipt_id,
+    request_id: row.request_id,
+    production_id: row.production_id,
+    job_id: row.job_id,
+    provider_id: row.provider_id,
+    runtime_id: row.runtime_id,
+    adapter_id: row.adapter_id,
+    capability: row.capability,
+    capability_handle_id: row.capability_handle_id,
+    authority_decision: row.authority_decision,
+    policy_profile: row.policy_profile,
+    risk_class: row.risk_class,
+    budget_class: row.budget_class,
+    attestation_summary: attestationSummary,
+    input_hash: row.input_hash,
+    authorization_hash: row.authorization_hash,
+    issued_at: row.issued_at,
+    expires_at: row.expires_at,
+    revoked_at: row.revoked_at,
+    status: row.status,
+    invocation_performed: false,
+  };
+}
+
 export async function revokeAuthorizationReceipt(db, receiptId, revokedAt = new Date()) {
   if (!nonEmpty(receiptId)) throw new TypeError('receipt_id is required');
   if (!db) throw new Error('D1 binding unavailable');
@@ -144,6 +196,7 @@ function sameScope(receipt, request) {
 export function validateAuthorizationReceipt(receipt, request, env = {}, now = new Date()) {
   const reasons = [];
   if (!isObject(receipt)) reasons.push('authorization receipt is missing');
+  if (!corridorEnabled(env)) reasons.push('execution corridor is disabled');
   if (!sameScope(receipt || {}, request || {})) reasons.push('authorization receipt scope does not match request');
   if (receipt?.authority_decision !== EXECUTION_DECISIONS.ALLOW) reasons.push('authorization receipt does not allow execution');
   if (receipt?.status !== 'ACTIVE') reasons.push('authorization receipt is not active');
@@ -162,10 +215,15 @@ export function validateAuthorizationReceipt(receipt, request, env = {}, now = n
 
 export async function dryRunInvocation(receipt, request, env = {}, now = new Date()) {
   const validation = validateAuthorizationReceipt(receipt, request, env, now);
+  const reasons = [...validation.reasons];
+  if (!receipt?.input_hash || receipt.input_hash !== await authorizationInputHash(request)) {
+    reasons.push('authorization receipt input hash does not match request');
+  }
+  const uniqueReasons = [...new Set(reasons)];
   return {
-    decision: validation.valid ? EXECUTION_DECISIONS.ALLOW : EXECUTION_DECISIONS.DENY,
+    decision: uniqueReasons.length === 0 ? EXECUTION_DECISIONS.ALLOW : EXECUTION_DECISIONS.DENY,
     invocation_performed: false,
-    reasons: validation.reasons,
+    reasons: uniqueReasons,
     receipt_id: receipt?.receipt_id ?? null,
   };
 }
@@ -195,7 +253,7 @@ export function toHermesCityProjection(state, details = {}) {
     production_id: details.production_id ?? null,
     job_id: details.job_id ?? null,
     runtime_id: details.runtime_id ?? null,
-    authorization_receipt_id: details.authorization_receipt_id ?? null,
+    authorization_receipt_id: details.authorization_receipt_id ?? details.receipt_id ?? null,
     attempt: Number.isInteger(details.attempt) ? details.attempt : 0,
     timestamp: details.timestamp ?? new Date().toISOString(),
     authority: 'PROJECTION_ONLY',
