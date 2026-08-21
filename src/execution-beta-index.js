@@ -1,0 +1,82 @@
+import jspaceWorker from './jspace-index.js';
+import { executeGovernedDryRun, createDryRunReceipt } from './dry-run-executor.js';
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    if (url.pathname !== '/api/execution/dry-run') {
+      return jspaceWorker.fetch(request, env, ctx);
+    }
+
+    if (request.method !== 'POST') {
+      return json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'The dry-run endpoint accepts POST only.' } }, 405, {
+        allow: 'POST',
+      });
+    }
+
+    const auth = authorizeOperator(request, env);
+    if (auth) return auth;
+
+    const maxBytes = positive(env.MAX_REQUEST_BYTES, 131072);
+    const text = await request.text();
+    if (new TextEncoder().encode(text).byteLength > maxBytes) {
+      return json({ error: { code: 'REQUEST_TOO_LARGE', message: 'Request body exceeds the configured limit.' } }, 413);
+    }
+    if (!(request.headers.get('content-type') || '').toLowerCase().includes('application/json')) {
+      return json({ error: { code: 'UNSUPPORTED_MEDIA_TYPE', message: 'Request body must use application/json.' } }, 415);
+    }
+
+    let envelope;
+    try {
+      envelope = text ? JSON.parse(text) : {};
+    } catch {
+      return json({ error: { code: 'INVALID_JSON', message: 'Request body must contain valid JSON.' } }, 400);
+    }
+
+    const result = await executeGovernedDryRun(envelope, env);
+    const receipt = createDryRunReceipt(result);
+    const status = result.state === 'DRY_RUN_ACCEPTED' ? 200 : 403;
+    return json({ ...result, dry_run_receipt: receipt }, status);
+  },
+};
+
+function authorizeOperator(request, env) {
+  if (!env.MCP_API_TOKEN) {
+    return json({ error: { code: 'OPERATOR_TOKEN_NOT_CONFIGURED', message: 'Operator access is not configured.' } }, 503);
+  }
+  const header = request.headers.get('authorization') || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  if (!token || !constantEqual(token, env.MCP_API_TOKEN)) {
+    return json({ error: { code: 'UNAUTHORIZED', message: 'A valid bearer token is required.' } }, 401, {
+      'www-authenticate': 'Bearer',
+    });
+  }
+  return null;
+}
+
+function constantEqual(left, right) {
+  const a = new TextEncoder().encode(String(left));
+  const b = new TextEncoder().encode(String(right));
+  let diff = a.length ^ b.length;
+  const length = Math.max(a.length, b.length);
+  for (let index = 0; index < length; index += 1) {
+    diff |= (a[index % a.length] || 0) ^ (b[index % b.length] || 0);
+  }
+  return diff === 0;
+}
+
+function positive(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.floor(number) : fallback;
+}
+
+function json(value, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(value), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+      ...extraHeaders,
+    },
+  });
+}
