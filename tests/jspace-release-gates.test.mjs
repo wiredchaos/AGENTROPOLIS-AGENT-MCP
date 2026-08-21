@@ -34,3 +34,21 @@ test('production deploy is credential-gated and verifies live endpoints', () => 
   }
   assert.match(deploy, /\/api\/jspace\?view=projection/);
 });
+
+test('production ops exposes operator-only rollback and revision history', () => {
+  assert.match(wrapper, /\/api\/jspace\/projection\/history/);
+  assert.match(wrapper, /\/api\/jspace\/projection\/activate/);
+  assert.match(wrapper, /authorizeOperator/);
+  assert.match(wrapper, /ALLOW_DERIVED_CACHE_POINTER_WRITE/);
+  assert.match(projection, /activateProjectionRevision/);
+  assert.match(projection, /listProjectionRevisions/);
+  assert.doesNotMatch(projection, /DELETE FROM jspace_projection_snapshots/i);
+});
+
+test('public projection reports freshness without promoting truth or canon', () => {
+  assert.match(wrapper, /JSPACE_PROJECTION_MAX_AGE_SECONDS/);
+  assert.match(wrapper, /STALE_DERIVED_PROJECTION/);
+  assert.match(projection, /STALE_UNKNOWN_AGE/);
+  assert.match(projection, /FRESH_PROJECTION/);
+  assert.doesNotMatch(wrapper, /ALLOW_CANON|PROMOTE_CANON/);
+});
