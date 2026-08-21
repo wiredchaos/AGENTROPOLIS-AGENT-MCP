@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "agentropolis-agent-mcp",
-  "main": "src/jspace-index.js",
+  "main": "src/execution-beta-index.js",
   "compatibility_date": "2026-07-31",
   "workers_dev": true,
   "preview_urls": true,
