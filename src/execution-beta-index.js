@@ -1,10 +1,27 @@
 import jspaceWorker from './jspace-index.js';
 import { executeGovernedDryRun, createDryRunReceipt } from './dry-run-executor.js';
 import { listOpsEvents, opsSupervisionEnabled } from './ops-supervisor.js';
+import { canaryReadiness } from './canary-admission.js';
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/execution/canary/readiness') {
+      if (request.method !== 'GET') {
+        return json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'The CANARY readiness endpoint accepts GET only.' } }, 405, {
+          allow: 'GET',
+        });
+      }
+      const auth = authorizeOperator(request, env);
+      if (auth) return auth;
+      const readiness = canaryReadiness(env);
+      return json({
+        ...readiness,
+        execution_mode: env.EXECUTION_MODE || 'AUTHORIZATION_ONLY',
+        provider_invocation: 'DISABLED',
+      });
+    }
 
     if (url.pathname === '/api/execution/ops') {
       if (request.method !== 'GET') {
