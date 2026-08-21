@@ -107,6 +107,60 @@ export async function readProjection(db) {
   };
 }
 
+export async function listProjectionRevisions(db, limit = 20) {
+  await ensureProjectionSchema(db);
+  const safeLimit = Math.max(1, Math.min(50, Number(limit) || 20));
+  const active = await db.prepare("SELECT active_revision FROM jspace_projection_state WHERE id=1").first();
+  const rows = await db.prepare("SELECT revision,schema_version,source,source_revision,node_count,edge_count,created_at FROM jspace_projection_snapshots ORDER BY created_at DESC LIMIT ?")
+    .bind(safeLimit).all();
+  return (rows?.results || []).map((row) => ({
+    revision: row.revision,
+    schema: row.schema_version,
+    source: row.source,
+    sourceRevision: row.source_revision,
+    nodeCount: Number(row.node_count || 0),
+    edgeCount: Number(row.edge_count || 0),
+    createdAt: row.created_at,
+    active: row.revision === active?.active_revision
+  }));
+}
+
+export async function activateProjectionRevision(db, revision, actorIdHash) {
+  await ensureProjectionSchema(db);
+  const cleanRevision = clean(revision, 128);
+  if (!cleanRevision) return { activated: false, reason: "REVISION_REQUIRED" };
+  const row = await db.prepare("SELECT revision,node_count,edge_count,source,source_revision,created_at FROM jspace_projection_snapshots WHERE revision=?")
+    .bind(cleanRevision).first();
+  if (!row) return { activated: false, reason: "REVISION_NOT_FOUND" };
+  const now = new Date().toISOString();
+  await db.prepare("INSERT INTO jspace_projection_state(id,active_revision,updated_at) VALUES(1,?,?) ON CONFLICT(id) DO UPDATE SET active_revision=excluded.active_revision,updated_at=excluded.updated_at")
+    .bind(cleanRevision, now).run();
+  return {
+    activated: true,
+    revision: cleanRevision,
+    nodeCount: Number(row.node_count || 0),
+    edgeCount: Number(row.edge_count || 0),
+    source: row.source,
+    sourceRevision: row.source_revision,
+    snapshotCreatedAt: row.created_at,
+    activatedAt: now,
+    actorIdHash
+  };
+}
+
+export function projectionFreshness(createdAt, maxAgeSeconds = 3600, nowMs = Date.now()) {
+  const parsed = Date.parse(String(createdAt || ""));
+  const maxAge = Math.max(60, Number(maxAgeSeconds) || 3600);
+  if (!Number.isFinite(parsed)) return { stale: true, ageSeconds: null, maxAgeSeconds: maxAge, state: "STALE_UNKNOWN_AGE" };
+  const ageSeconds = Math.max(0, Math.floor((nowMs - parsed) / 1000));
+  return {
+    stale: ageSeconds > maxAge,
+    ageSeconds,
+    maxAgeSeconds: maxAge,
+    state: ageSeconds > maxAge ? "STALE_PROJECTION" : "FRESH_PROJECTION"
+  };
+}
+
 export async function ensureProjectionSchema(db) {
   if (!db) throw new Error("D1 binding unavailable");
   await db.batch([
