@@ -1,9 +1,41 @@
 import jspaceWorker from './jspace-index.js';
 import { executeGovernedDryRun, createDryRunReceipt } from './dry-run-executor.js';
+import { listOpsEvents, opsSupervisionEnabled } from './ops-supervisor.js';
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/execution/ops') {
+      if (request.method !== 'GET') {
+        return json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'The OPS endpoint accepts GET only.' } }, 405, {
+          allow: 'GET',
+        });
+      }
+      const auth = authorizeOperator(request, env);
+      if (auth) return auth;
+      if (!opsSupervisionEnabled(env)) {
+        return json({ error: { code: 'OPS_SUPERVISION_DISABLED', message: 'OPS supervision is not enabled.' } }, 503);
+      }
+      try {
+        const events = await listOpsEvents(env.DB, {
+          job_id: url.searchParams.get('job_id'),
+          production_id: url.searchParams.get('production_id'),
+          authorization_receipt_id: url.searchParams.get('authorization_receipt_id'),
+          limit: url.searchParams.get('limit'),
+        });
+        return json({
+          authority: 'READ_ONLY_SUPERVISION',
+          execution_mode: env.EXECUTION_MODE || 'AUTHORIZATION_ONLY',
+          provider_invocation: 'DISABLED',
+          count: events.length,
+          events,
+        });
+      } catch {
+        return json({ error: { code: 'OPS_SUPERVISION_UNAVAILABLE', message: 'OPS supervision store is unavailable.' } }, 503);
+      }
+    }
+
     if (url.pathname !== '/api/execution/dry-run') {
       return jspaceWorker.fetch(request, env, ctx);
     }

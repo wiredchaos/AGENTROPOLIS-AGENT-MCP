@@ -3,6 +3,7 @@ import {
   loadAuthorizationReceipt,
   toHermesCityProjection,
 } from './execution-corridor.js';
+import { opsSupervisionEnabled, recordOpsEvent } from './ops-supervisor.js';
 
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 
@@ -43,18 +44,20 @@ function simulationPlan(request = {}) {
   };
 }
 
-function denied(request, reasons, now = new Date()) {
+function denied(request, reasons, now = new Date(), receipt = null) {
   return {
     state: DRY_RUN_STATES.DENIED,
     reasons,
-    authorization_receipt_id: null,
-    authorization_hash: null,
+    authorization_receipt_id: receipt?.receipt_id ?? null,
+    authorization_hash: receipt?.authorization_hash ?? null,
     invocation_performed: false,
     simulation: null,
+    ops_event: null,
     hermes_city: toHermesCityProjection('FAILED', {
       production_id: request?.production_id ?? null,
       job_id: request?.job_id ?? null,
       runtime_id: request?.runtime_id ?? null,
+      authorization_receipt_id: receipt?.receipt_id ?? null,
       timestamp: new Date(now).toISOString(),
     }),
   };
@@ -77,13 +80,14 @@ export async function executeGovernedDryRun(envelope, env = {}, now = new Date()
 
   const invocation = await dryRunInvocation(receipt, request, env, now);
   const allowed = invocation.decision === 'ALLOW_EXECUTION';
-  return {
+  const baseResult = {
     state: allowed ? DRY_RUN_STATES.ACCEPTED : DRY_RUN_STATES.DENIED,
     reasons: invocation.reasons,
     authorization_receipt_id: receipt.receipt_id,
     authorization_hash: receipt.authorization_hash ?? null,
     invocation_performed: false,
     simulation: allowed ? simulationPlan(request) : null,
+    ops_event: null,
     hermes_city: toHermesCityProjection(allowed ? 'QUEUED' : 'FAILED', {
       production_id: request.production_id ?? null,
       job_id: request.job_id ?? null,
@@ -92,6 +96,19 @@ export async function executeGovernedDryRun(envelope, env = {}, now = new Date()
       timestamp: new Date(now).toISOString(),
     }),
   };
+
+  if (!opsSupervisionEnabled(env)) return baseResult;
+
+  try {
+    const supervised = await recordOpsEvent(env.DB, allowed ? 'QUEUED' : 'FAILED', receipt, 1, now);
+    return {
+      ...baseResult,
+      ops_event: supervised.event,
+      hermes_city: supervised.projection,
+    };
+  } catch {
+    return denied(request, [...invocation.reasons, 'OPS supervision persistence failed'], now, receipt);
+  }
 }
 
 export function createDryRunReceipt(result, now = new Date()) {
@@ -103,6 +120,7 @@ export function createDryRunReceipt(result, now = new Date()) {
     provider_invocation: 'DISABLED',
     invocation_performed: false,
     simulation: result?.simulation ?? null,
+    ops_event_id: result?.ops_event?.event_id ?? null,
     reasons: Array.isArray(result?.reasons) ? result.reasons : [],
     timestamp: new Date(now).toISOString(),
   };
