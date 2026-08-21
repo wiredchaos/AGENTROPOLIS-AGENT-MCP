@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeProjectionInput, validateProjectionInput } from '../src/jspace-projection.js';
+import { normalizeProjectionInput, projectionFreshness, validateProjectionInput } from '../src/jspace-projection.js';
 
 const sample = {
   source: 'wikivault-export',
@@ -41,4 +41,17 @@ test('projection rejects secret-like fields and invalid relation references', ()
 test('projection enforces confidence and torque bounds', () => {
   assert.match(validateProjectionInput({ nodes: [{ id: 'x', title: 'x', confidence: 2 }], edges: [] }), /confidence/i);
   assert.match(validateProjectionInput({ nodes: [{ id: 'x', title: 'x', torque: -0.1 }], edges: [] }), /torque/i);
+});
+
+test('projection freshness distinguishes fresh, stale, and unknown age without changing authority', () => {
+  const now = Date.parse('2026-08-20T20:00:00Z');
+  const fresh = projectionFreshness('2026-08-20T19:59:30Z', 60, now);
+  const stale = projectionFreshness('2026-08-20T19:50:00Z', 60, now);
+  const unknown = projectionFreshness('not-a-date', 60, now);
+  assert.equal(fresh.state, 'FRESH_PROJECTION');
+  assert.equal(fresh.stale, false);
+  assert.equal(stale.state, 'STALE_PROJECTION');
+  assert.equal(stale.stale, true);
+  assert.equal(unknown.state, 'STALE_UNKNOWN_AGE');
+  assert.equal(unknown.stale, true);
 });
