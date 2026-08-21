@@ -6,6 +6,7 @@ This runbook defines the release gates for JSpace Neural Fabric record-level mem
 ## Release classes
 - SOURCE_GREEN: validation, unit tests, secret scan, Wrangler dry-run green.
 - UI_BETA_GREEN: GitHub Pages deployment green and browser remains read-only.
+- PROD_OPS_GREEN: rollback pointer, revision history, freshness detection, and receipts are present and regression-tested.
 - WORKER_BETA_GREEN: Cloudflare Worker deployed, D1 migrations applied, health/manifest/projection endpoints verified.
 - DATA_BETA_GREEN: first validated WikiVault bundle synced through the operator-only projection corridor and read back with matching revision.
 - PRODUCTION_BETA_GREEN: all above plus rollback drill, stale-projection detection, abuse tests, and receipt verification.
@@ -21,6 +22,8 @@ This runbook defines the release gates for JSpace Neural Fabric record-level mem
 8. ETag/304 behavior must avoid unnecessary payload transfer.
 9. Visual salience/Torque is never displayed as epistemic truth.
 10. Challenged/conflicted records remain visibly distinguishable from verified records.
+11. Stale projection state must be explicit and never silently presented as fresh telemetry.
+12. Rollback may change only the active derived-cache pointer; it must not edit or delete snapshots.
 
 ## Beta test matrix
 ### Contract
@@ -38,6 +41,8 @@ This runbook defines the release gates for JSpace Neural Fabric record-level mem
 - public projection GET allowed
 - public response advertises read-only authority
 - sync receipt uses ALLOW_DERIVED_CACHE_WRITE only
+- history and activate endpoints require operator authorization
+- activate receipt uses ALLOW_DERIVED_CACHE_POINTER_WRITE only
 
 ### Resilience
 - no projection returns NO_PROJECTION_AVAILABLE, not fabricated data
@@ -46,19 +51,31 @@ This runbook defines the release gates for JSpace Neural Fabric record-level mem
 - failed sync never swaps active revision
 - identical projection produces deterministic revision hash
 - stale browser ETag receives fresh payload only when revision changes
+- projection older than JSPACE_PROJECTION_MAX_AGE_SECONDS reports STALE_DERIVED_PROJECTION
+- invalid or missing projection timestamps fail closed to STALE_UNKNOWN_AGE
 
 ### Observability
 - every projection read receives execution receipt when D1 is available
 - every projection sync receives execution receipt
+- every rollback pointer activation receives execution receipt
 - revision, source, sourceRevision, node/edge counts and timestamps are observable without exposing raw secrets
+- operator history lists bounded revision metadata but not raw snapshot payloads
 
 ### Rollback
-Rollback is pointer-based. Preserve prior snapshots. To roll back, select a previously validated projection revision through the future operator rollback action; until that action is implemented, rollback is performed by re-syncing the prior validated source export. Never delete the failed snapshot during incident response.
+Rollback is pointer-based and is now implemented through the operator-only `POST /api/jspace/projection/activate` endpoint. The operator supplies a previously validated revision returned by `GET /api/jspace/projection/history`. Activation changes only `jspace_projection_state.active_revision`; it never rewrites WikiVault, Obsidian, gBRAIN, or a stored projection snapshot. The action emits an `ALLOW_DERIVED_CACHE_POINTER_WRITE` receipt. Never delete the failed snapshot during incident response.
+
+Rollback drill:
+1. Record the current active revision from the projection response.
+2. Sync a known-good test revision and verify read-back.
+3. Use projection history to locate the prior validated revision.
+4. Activate the prior revision through the operator endpoint.
+5. GET the public projection and verify the ETag/revision match the rollback target.
+6. Confirm the rollback receipt persisted and no canonical memory mutation occurred.
 
 ## Go / no-go
-GO requires SOURCE_GREEN + UI_BETA_GREEN + WORKER_BETA_GREEN + DATA_BETA_GREEN and zero unresolved critical authority/security findings.
+GO requires SOURCE_GREEN + UI_BETA_GREEN + PROD_OPS_GREEN + WORKER_BETA_GREEN + DATA_BETA_GREEN and zero unresolved critical authority/security findings.
 
-NO-GO if Cloudflare credentials are absent, migrations are not verified, production endpoint reports INVALID_VIEW for projection, receipts fail unexpectedly, SECURITY_ONLY leakage occurs, or browser mutation capability appears.
+NO-GO if Cloudflare credentials are absent, migrations are not verified, production endpoint reports INVALID_VIEW for projection, receipts fail unexpectedly, SECURITY_ONLY leakage occurs, browser mutation capability appears, or stale data is presented as live.
 
 ## Current external gate
 The Cloudflare Production Deploy workflow requires sealed GitHub production-environment secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Credentials must never be copied into source, issues, prompts, logs, or memory records.
