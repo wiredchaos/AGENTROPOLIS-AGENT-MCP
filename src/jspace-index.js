@@ -8,7 +8,10 @@ import {
   wikivaultJspaceBridge
 } from "./core.js";
 import {
+  activateProjectionRevision,
+  listProjectionRevisions,
   normalizeProjectionInput,
+  projectionFreshness,
   readProjection,
   storeProjection,
   validateProjectionInput
@@ -42,8 +45,17 @@ export default {
           if (projection && ifNoneMatch === projection.revision) {
             return decorate(new Response(null, { status: 304, headers: { etag: `"${projection.revision}"` } }), request, env, requestId);
           }
+          const freshness = projection ? projectionFreshness(projection.createdAt, positive(env.JSPACE_PROJECTION_MAX_AGE_SECONDS, 3600)) : null;
           const output = projection
-            ? { projection: projection.projection, revision: projection.revision, source: projection.source, sourceRevision: projection.sourceRevision, createdAt: projection.createdAt, state: "LIVE_DERIVED_PROJECTION" }
+            ? {
+                projection: projection.projection,
+                revision: projection.revision,
+                source: projection.source,
+                sourceRevision: projection.sourceRevision,
+                createdAt: projection.createdAt,
+                state: freshness.stale ? "STALE_DERIVED_PROJECTION" : "LIVE_DERIVED_PROJECTION",
+                freshness
+              }
             : { projection: null, revision: null, state: "NO_PROJECTION_AVAILABLE", authority: "READ_ONLY" };
           const identity = await actorIdentity(request, env);
           const receipt = await writeReceipt(env, { requestId, toolName: "get_jspace_memory_projection", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: {}, output, durationMs: 0 });
@@ -57,6 +69,19 @@ export default {
         const identity = await actorIdentity(request, env);
         const result = await executeJspaceTool(name, {}, env, requestId, identity);
         return decorate(json(result.output), request, env, requestId);
+      }
+
+      if (url.pathname === "/api/jspace/projection/history" && request.method === "GET") {
+        const guard = requestGuard(request, env);
+        if (guard) return decorate(guard, request, env, requestId);
+        const auth = authorizeOperator(request, env);
+        if (auth) return decorate(auth, request, env, requestId);
+        const limit = Math.max(1, Math.min(50, Number(url.searchParams.get("limit")) || 20));
+        const revisions = await listProjectionRevisions(env.DB, limit);
+        const identity = await actorIdentity(request, env);
+        const output = { authority: "OPERATOR_READ_ONLY", revisions };
+        const receipt = await writeReceipt(env, { requestId, toolName: "list_jspace_projection_revisions", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: { limit }, output, durationMs: 0 });
+        return decorate(json({ ...output, receipt }), request, env, requestId);
       }
 
       if (url.pathname === "/api/jspace/projection/sync" && request.method === "POST") {
@@ -74,6 +99,25 @@ export default {
         const output = { accepted: true, authority: "DERIVED_CACHE_ONLY", ...stored, stats: projection.stats };
         const receipt = await writeReceipt(env, { requestId, toolName: "sync_jspace_memory_projection", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: { source: projection.source, sourceRevision: projection.sourceRevision, nodeCount: projection.nodes.length, edgeCount: projection.edges.length }, output, durationMs: 0, authorityDecision: "ALLOW_DERIVED_CACHE_WRITE" });
         return decorate(json({ ...output, receipt }, 202, { etag: `"${stored.revision}"` }), request, env, requestId);
+      }
+
+      if (url.pathname === "/api/jspace/projection/activate" && request.method === "POST") {
+        const guard = requestGuard(request, env);
+        if (guard) return decorate(guard, request, env, requestId);
+        const auth = authorizeOperator(request, env);
+        if (auth) return decorate(auth, request, env, requestId);
+        const body = await tryInspectJson(request.clone(), env);
+        const revision = typeof body?.revision === "string" ? body.revision.trim() : "";
+        if (!revision) return decorate(errorJson(400, "REVISION_REQUIRED", "A projection revision is required."), request, env, requestId);
+        const identity = await actorIdentity(request, env);
+        const result = await activateProjectionRevision(env.DB, revision, identity.actorIdHash);
+        if (!result.activated) {
+          const status = result.reason === "REVISION_NOT_FOUND" ? 404 : 400;
+          return decorate(errorJson(status, result.reason, result.reason === "REVISION_NOT_FOUND" ? "Projection revision not found." : "A valid projection revision is required."), request, env, requestId);
+        }
+        const output = { ...result, authority: "DERIVED_CACHE_POINTER_ONLY" };
+        const receipt = await writeReceipt(env, { requestId, toolName: "activate_jspace_projection_revision", actorType: identity.actorType, actorIdHash: identity.actorIdHash, input: { revision }, output, durationMs: 0, authorityDecision: "ALLOW_DERIVED_CACHE_POINTER_WRITE" });
+        return decorate(json({ ...output, receipt }, 202, { etag: `"${result.revision}"` }), request, env, requestId);
       }
 
       if (MCP_PATHS.has(url.pathname) && request.method === "POST") {
@@ -193,7 +237,7 @@ async function writeReceipt(env, data) {
   try {
     await ensureSchema(env.DB);
     await env.DB.prepare("INSERT INTO execution_receipts (id,request_id,tool_name,tool_version,actor_type,actor_id_hash,authority_decision,input_hash,output_hash,status,duration_ms,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
-      .bind(receipt.id, data.requestId, data.toolName, "1.2.0-jspace-projection", data.actorType, data.actorIdHash, authorityDecision, await sha256(stable(data.input)), await sha256(stable(data.output)), "success", data.durationMs, new Date().toISOString()).run();
+      .bind(receipt.id, data.requestId, data.toolName, "1.3.0-jspace-prod-ops", data.actorType, data.actorIdHash, authorityDecision, await sha256(stable(data.input)), await sha256(stable(data.output)), "success", data.durationMs, new Date().toISOString()).run();
     receipt.persisted = true;
   } catch (error) {
     console.warn(JSON.stringify({ event: "jspace_receipt_persistence_failed", receiptId: receipt.id, message: error instanceof Error ? error.message : "unknown" }));
