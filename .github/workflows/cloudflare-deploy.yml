@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "src/**"
+      - "scripts/verify-jspace-production.mjs"
       - "migrations/**"
       - "wrangler.jsonc"
       - "package.json"
@@ -27,6 +28,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      JSPACE_BASE_URL: https://agentropolis-agent-mcp.chaoswired.workers.dev
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -51,7 +53,7 @@ jobs:
         run: |
           set -euo pipefail
           node - <<'NODE'
-          const base='https://agentropolis-agent-mcp.chaoswired.workers.dev';
+          const base=process.env.JSPACE_BASE_URL;
           const checks=['/health','/api/jspace?view=manifest','/api/jspace?view=projection'];
           for (const path of checks) {
             const r=await fetch(base+path,{headers:{accept:'application/json'}});
@@ -59,3 +61,5 @@ jobs:
             console.log(`${path} OK ${r.status}`);
           }
           NODE
+      - name: Verify JSpace production semantics
+        run: npm run jspace:verify-production
