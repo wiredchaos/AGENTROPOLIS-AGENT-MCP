@@ -4,6 +4,7 @@ import {
   listProviderReadiness,
   openArtProviderReadiness,
   openArtVerificationEvidence,
+  openArtCanaryEvidence,
   comfyUIProviderReadiness,
   blenderUtilityReadiness,
   ffmpegUtilityReadiness,
@@ -66,4 +67,39 @@ test('openart evidence does not flip eligibility — readiness remains pending/c
   assert.equal(readiness.registry_state, 'PENDING_EVIDENCE');
   assert.equal(readiness.invocation_performed, false);
   assert.equal(readiness.authority, 'READINESS_ONLY');
+});
+
+test('openart canary evidence records one bounded invocation with gate retained', () => {
+  const canary = openArtCanaryEvidence();
+  assert.equal(canary.canary_execution, 'VERIFIED');
+  assert.equal(canary.authorization, 'HUMAN_SINGLE_INVOCATION');
+  assert.equal(canary.invocation_count, 1);
+  assert.equal(canary.model, 'kling-3-omni');
+  assert.equal(canary.mode, 'text2image');
+  assert.equal(canary.requested_images, 1);
+  assert.equal(canary.returned_assets, 1);
+  assert.equal(canary.quoted_credits, 10);
+  assert.equal(canary.actual_charged_credits, 10);
+  assert.equal(canary.quote_matched_charge, true);
+  assert.equal(canary.retries, 0);
+  assert.equal(canary.fallback_model, 'NONE');
+  assert.equal(canary.provider_switch, 'NONE');
+  assert.equal(canary.second_invocation, 'NONE');
+  assert.equal(canary.execution_status, 'COMPLETED');
+  assert.equal(canary.lane_state_after_canary, 'GATED');
+  assert.equal(canary.live, 'UNARMED');
+  assert.equal(canary.series_amount_finding, 'seriesAmount=4 inert under resultType=single');
+});
+
+test('openart canary evidence does NOT grant standing write authority', () => {
+  const canary = openArtCanaryEvidence();
+  // Bounded single-job corridor is verified, but the standing gate stays closed.
+  assert.equal(canary.write_corridor.bounded_single_job_canary, 'VERIFIED');
+  assert.equal(canary.write_corridor.standing_write_authority, 'NOT_GRANTED');
+  assert.equal(canary.write_corridor.autonomous_invocation, 'NOT_AUTHORIZED');
+  assert.equal(canary.write_corridor.default_gate, 'CLOSED');
+  // The readiness registry itself still reports the provider as non-eligible.
+  const readiness = openArtProviderReadiness({ EXECUTION_MODE: 'DRY_RUN' });
+  assert.equal(readiness.eligible, false);
+  assert.equal(readiness.invocation_performed, false);
 });
