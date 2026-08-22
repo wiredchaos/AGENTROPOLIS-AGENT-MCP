@@ -51,6 +51,46 @@ export const OPENART_MCP_VERIFICATION_EVIDENCE = Object.freeze({
   recorded_at: '2026-08-20',
 });
 
+/**
+ * OpenArt bounded single-image CANARY execution evidence (2026-08-22).
+ *
+ * One human-authorized invocation, forensically verified read-only afterward.
+ * This records the completed canary WITHOUT granting standing write authority:
+ * the write corridor is VERIFIED for a bounded single job only; the default
+ * invocation gate stays CLOSED and autonomous invocation remains NOT AUTHORIZED.
+ *
+ * Sanitized: no account identifiers, balances, OAuth material, or full asset
+ * URLs are recorded. Private evidence lives in the verification vault.
+ */
+export const OPENART_MCP_CANARY_EVIDENCE = Object.freeze({
+  canary_execution: 'VERIFIED',
+  authorization: 'HUMAN_SINGLE_INVOCATION',
+  invocation_count: 1,
+  model: 'kling-3-omni',
+  mode: 'text2image',
+  requested_images: 1,
+  returned_assets: 1,
+  quoted_credits: 10,
+  actual_charged_credits: 10,
+  quote_matched_charge: true,
+  retries: 0,
+  fallback_model: 'NONE',
+  provider_switch: 'NONE',
+  second_invocation: 'NONE',
+  series_amount_finding: 'seriesAmount=4 inert under resultType=single',
+  execution_status: 'COMPLETED',
+  lane_state_after_canary: 'GATED',
+  live: 'UNARMED',
+  write_corridor: {
+    bounded_single_job_canary: 'VERIFIED',
+    standing_write_authority: 'NOT_GRANTED',
+    autonomous_invocation: 'NOT_AUTHORIZED',
+    default_gate: 'CLOSED',
+  },
+  recorded_by: 'neuro-hermes-strategist',
+  recorded_at: '2026-08-22',
+});
+
 const descriptors = Object.freeze([
   {
     id: 'openart-mcp',
@@ -139,6 +179,15 @@ export function openArtProviderReadiness(env = {}) {
  */
 export function openArtVerificationEvidence() {
   return OPENART_MCP_VERIFICATION_EVIDENCE;
+}
+
+/**
+ * Surface the recorded OpenArt bounded single-image CANARY execution evidence.
+ * Read-only; does NOT grant standing write authority. The default invocation
+ * gate stays CLOSED and autonomous invocation stays NOT_AUTHORIZED.
+ */
+export function openArtCanaryEvidence() {
+  return OPENART_MCP_CANARY_EVIDENCE;
 }
 
 export function comfyUIProviderReadiness(env = {}) {
