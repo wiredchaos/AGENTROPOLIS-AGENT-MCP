@@ -1,5 +1,56 @@
 const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
 
+/**
+ * OpenArt MCP verification evidence — recorded from sanctioned discovery/
+ * introspection (2026-08-20, neuro-hermes-strategist). This is metadata for
+ * governance, NOT an eligibility grant: write/generative readiness remains
+ * CONDITIONAL and provider invocation stays gated until a separate human
+ * authorization + budget envelope is approved.
+ *
+ * - authentication = VERIFIED (OAuth 2.1 PKCE completed)
+ * - discovery/tool manifest = VERIFIED (16 tools, see sha256)
+ * - read capability = VERIFIED (11 read-only tools)
+ * - machine-readable schema evidence = VERIFIED
+ * - manifest hash = recorded (sorted 16-tool names)
+ * - runtime/server ID = UNKNOWN (server does not expose one; not fabricated)
+ * - write/generative readiness = CONDITIONAL
+ * - provider invocation remains gated
+ */
+export const OPENART_MCP_VERIFICATION_EVIDENCE = Object.freeze({
+  provider_id: 'openart-mcp',
+  endpoint: 'https://mcp.openart.ai/mcp',
+  transport: 'MCP',
+  authentication: 'VERIFIED',
+  oauth: {
+    mechanism: 'OAuth 2.1 PKCE',
+    code_challenge_method: 'S256',
+    scope: 'full_access',
+  },
+  discovery: {
+    tool_manifest: 'VERIFIED',
+    tool_count: 16,
+    manifest_sha256: 'dc2a73275cd0c59acf477eb5228ec34a2178580cce8b98cb8ca369239e3d44e5',
+    read_capability: 'VERIFIED',
+    machine_readable_schema: 'VERIFIED',
+    runtime_id: null,
+  },
+  capability: {
+    read_only_tools: 11,
+    generative_write_tools: 2,
+    workspace_write_tools: 1,
+    upload_write_tools: 2,
+    destructive_tools: 0,
+    write_generative_readiness: 'CONDITIONAL',
+    invocation: 'GATED',
+  },
+  cost: {
+    credits_spent: 0,
+    generation_invoked: false,
+  },
+  recorded_by: 'neuro-hermes-strategist',
+  recorded_at: '2026-08-20',
+});
+
 const descriptors = Object.freeze([
   {
     id: 'openart-mcp',
@@ -79,6 +130,15 @@ function readinessFor(descriptor, env = {}) {
 
 export function openArtProviderReadiness(env = {}) {
   return readinessFor(descriptors[0], env);
+}
+
+/**
+ * Surface the recorded OpenArt MCP verification evidence. Read-only; does not
+ * change eligibility. Write/generative readiness stays CONDITIONAL and
+ * invocation stays GATED until a human authorizes + funds it.
+ */
+export function openArtVerificationEvidence() {
+  return OPENART_MCP_VERIFICATION_EVIDENCE;
 }
 
 export function comfyUIProviderReadiness(env = {}) {
